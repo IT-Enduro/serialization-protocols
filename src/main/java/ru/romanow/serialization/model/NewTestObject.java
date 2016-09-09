@@ -1,4 +1,4 @@
-package ru.romanow.serialization.model.json;
+package ru.romanow.serialization.model;
 
 import com.google.common.base.MoreObjects;
 
@@ -7,8 +7,8 @@ import java.io.Serializable;
 /**
  * Created by ronin on 09.09.16
  */
-public class NewJsonTestObject
-        extends JsonTestObject
+public class NewTestObject
+        extends TestObject
         implements Serializable {
     private static final long serialVersionUID = -5937186496112650685L;
 
@@ -18,7 +18,7 @@ public class NewJsonTestObject
         return version;
     }
 
-    public NewJsonTestObject setVersion(String version) {
+    public NewTestObject setVersion(String version) {
         this.version = version;
         return this;
     }

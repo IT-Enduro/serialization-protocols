@@ -2,7 +2,7 @@ package ru.romanow.serialization.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.romanow.serialization.model.xml.XmlTestObject;
+import ru.romanow.serialization.model.XmlTestObject;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.*;

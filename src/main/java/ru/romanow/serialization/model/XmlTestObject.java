@@ -1,24 +1,37 @@
-package ru.romanow.serialization.model.json;
+package ru.romanow.serialization.model;
 
 import com.google.common.base.MoreObjects;
-import ru.romanow.serialization.model.Status;
-import ru.romanow.serialization.model.TestObject;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Created by ronin on 09.09.16
  */
-public class JsonTestObject
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class XmlTestObject
         extends TestObject
         implements Serializable {
-    private static final long serialVersionUID = 6993892048926972018L;
+    private static final long serialVersionUID = 632112641149051390L;
+
+    @XmlElement(name = "message")
+    protected String message;
+
+    @XmlElement(name = "code")
+    protected Integer code;
+
+    @XmlElement(name = "status")
+    protected Status status;
 
     public String getMessage() {
         return message;
     }
 
-    public JsonTestObject setMessage(String message) {
+    public XmlTestObject setMessage(String message) {
         this.message = message;
         return this;
     }
@@ -27,7 +40,7 @@ public class JsonTestObject
         return code;
     }
 
-    public JsonTestObject setCode(Integer code) {
+    public XmlTestObject setCode(Integer code) {
         this.code = code;
         return this;
     }
@@ -36,7 +49,7 @@ public class JsonTestObject
         return status;
     }
 
-    public JsonTestObject setStatus(Status status) {
+    public XmlTestObject setStatus(Status status) {
         this.status = status;
         return this;
     }

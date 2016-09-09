@@ -3,6 +3,8 @@ ext {
     jaxbVersion = "2.2.12"
     jacksonVersion = "2.8.2"
     bsonVersion = "2.7.0"
+    msgpackVersion = "0.6.12"
+    jacksonMsgpackVersion = "0.8.9"
 
     guavaVersion = "19.0"
     commonsLangVersion = "3.4"

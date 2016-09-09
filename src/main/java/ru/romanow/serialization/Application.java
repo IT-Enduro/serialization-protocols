@@ -9,11 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.Base64Utils;
 import ru.romanow.serialization.model.Status;
 import ru.romanow.serialization.model.TestObject;
-import ru.romanow.serialization.model.json.JsonTestObject;
-import ru.romanow.serialization.model.json.NewJsonTestObject;
-import ru.romanow.serialization.model.xml.XmlTestObject;
+import ru.romanow.serialization.model.NewTestObject;
+import ru.romanow.serialization.model.XmlTestObject;
 import ru.romanow.serialization.services.BsonSerializer;
 import ru.romanow.serialization.services.JsonSerializer;
+import ru.romanow.serialization.services.MsgpackSerializer;
 import ru.romanow.serialization.services.XmlSerializer;
 
 import java.io.BufferedReader;
@@ -34,17 +34,29 @@ public class Application {
 //        application.testXml();
 //        application.validateXml();
         application.testBson();
+        application.testMsgPack();
     }
 
-    private void testBson() {
-        TestObject testObject = createJsonTestObject();
+    private void testJson() {
+        TestObject testObject = createTestObject();
 
-        logger.info("Serialize object '{}' to BSON", testObject);
+        logger.info("Serialize object '{}' to JSON", testObject);
 
-        byte[] bson = BsonSerializer.toBson(testObject);
-        logger.info("\n{}", Base64Utils.encodeToString(bson));
+        String json = JsonSerializer.toJson(testObject);
+        logger.info("\n{}", json);
 
-        JsonTestObject newObject = BsonSerializer.fromBson(bson, JsonTestObject.class);
+        NewTestObject newObject = JsonSerializer.fromJson(json, NewTestObject.class);
+        logger.info("{}", newObject);
+    }
+
+    private void testXml() throws Exception {
+        TestObject testObject = createXmlTestObject();
+        logger.info("Serialize object '{}' to XML", testObject);
+
+        String xml = XmlSerializer.toXml(testObject);
+        logger.info("\n{}", xml);
+
+        XmlTestObject newObject = XmlSerializer.fromXml(xml);
         logger.info("{}", newObject);
     }
 
@@ -60,31 +72,32 @@ public class Application {
         logger.info("XML valid: {}", XmlSerializer.validate(xml));
     }
 
-    private void testJson() {
-        TestObject testObject = createJsonTestObject();
+    private void testBson() {
+        TestObject testObject = createTestObject();
 
-        logger.info("Serialize object '{}' to JSON", testObject);
+        logger.info("Serialize object '{}' to BSON", testObject);
 
-        String json = JsonSerializer.toJson(testObject);
-        logger.info("\n{}", json);
+        byte[] bson = BsonSerializer.toBson(testObject);
+        logger.info("\n{}", Base64Utils.encodeToString(bson));
 
-        NewJsonTestObject newObject = JsonSerializer.fromJson(json, NewJsonTestObject.class);
+        TestObject newObject = BsonSerializer.fromBson(bson, TestObject.class);
         logger.info("{}", newObject);
     }
 
-    private void testXml() throws Exception {
-        TestObject testObject = createXmlTestObject();
-        logger.info("Serialize object '{}' to XML", testObject);
+    private void testMsgPack() {
+        TestObject testObject = createTestObject();
 
-        String xml = XmlSerializer.toXml(testObject);
-        logger.info("\n{}", xml);
+        logger.info("Serialize object '{}' to MsgPack", testObject);
 
-        XmlTestObject newObject = XmlSerializer.fromXml(xml);
+        byte[] bson = MsgpackSerializer.toMsgpack(testObject);
+        logger.info("\n{}", Base64Utils.encodeToString(bson));
+
+        TestObject newObject = MsgpackSerializer.fromMsgpack(bson, TestObject.class);
         logger.info("{}", newObject);
     }
 
-    private JsonTestObject createJsonTestObject() {
-        return new JsonTestObject()
+    private TestObject createTestObject() {
+        return new TestObject()
                 .setMessage(RandomStringUtils.randomAlphanumeric(10))
                 .setCode(RandomUtils.nextInt(0, 100))
                 .setStatus(Status.DONE);

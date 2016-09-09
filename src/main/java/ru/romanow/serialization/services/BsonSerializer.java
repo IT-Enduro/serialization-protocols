@@ -5,8 +5,6 @@ import de.undercouch.bson4jackson.BsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-
 /**
  * Created by ronin on 10.09.16
  */
@@ -14,15 +12,15 @@ public class BsonSerializer {
     private static final Logger logger = LoggerFactory.getLogger(BsonSerializer.class);
 
     public static byte[] toBson(Object object) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        byte[] result = null;
         ObjectMapper mapper = new ObjectMapper(new BsonFactory());
         try {
-            mapper.writeValue(stream, object);
+            result = mapper.writeValueAsBytes(object);
         } catch (Exception exception) {
             logger.error("", exception);
         }
 
-        return stream.toByteArray();
+        return result;
     }
 
     public static <T> T fromBson(byte[] bson, Class<T> cls) {
