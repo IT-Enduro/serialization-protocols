@@ -1,5 +1,6 @@
 ext {
     gsonVersion = "2.7"
+    jaxbVersion = "2.2.12"
 
     guavaVersion = "19.0"
     commonsLangVersion = "3.4"
