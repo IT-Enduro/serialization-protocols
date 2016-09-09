@@ -1,5 +1,6 @@
 package ru.romanow.serialization;
 
+import com.google.common.io.Closeables;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
@@ -13,6 +14,11 @@ import ru.romanow.serialization.model.xml.XmlTestObject;
 import ru.romanow.serialization.services.JsonSerializer;
 import ru.romanow.serialization.services.XmlSerializer;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
+
 /**
  * Created by romanow on 02.09.16
  */
@@ -22,8 +28,21 @@ public class Application {
 
     public static void main(String[] args) throws Exception {
         Application application = new Application();
-        application.testJson();
-        application.testXml();
+//        application.testJson();
+//        application.testXml();
+//        application.validateXml();
+    }
+
+    private void validateXml() {
+        InputStream stream = ClassLoader.class.getResourceAsStream("/xml/data.xml");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+        String xml = reader.lines().collect(Collectors.joining("\n"));
+        Closeables.closeQuietly(reader);
+        Closeables.closeQuietly(stream);
+
+        logger.info("Read XML from file:\n{}", xml);
+
+        logger.info("XML valid: {}", XmlSerializer.validate(xml));
     }
 
     private void testJson() {
@@ -45,7 +64,7 @@ public class Application {
         String xml = XmlSerializer.toXml(testObject);
         logger.info("\n{}", xml);
 
-        XmlTestObject newObject = XmlSerializer.fromXml(xml, XmlTestObject.class);
+        XmlTestObject newObject = XmlSerializer.fromXml(xml);
         logger.info("{}", newObject);
     }
 
