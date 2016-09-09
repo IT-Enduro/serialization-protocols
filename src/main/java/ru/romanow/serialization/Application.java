@@ -6,11 +6,13 @@ import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.util.Base64Utils;
 import ru.romanow.serialization.model.Status;
 import ru.romanow.serialization.model.TestObject;
 import ru.romanow.serialization.model.json.JsonTestObject;
 import ru.romanow.serialization.model.json.NewJsonTestObject;
 import ru.romanow.serialization.model.xml.XmlTestObject;
+import ru.romanow.serialization.services.BsonSerializer;
 import ru.romanow.serialization.services.JsonSerializer;
 import ru.romanow.serialization.services.XmlSerializer;
 
@@ -31,6 +33,19 @@ public class Application {
 //        application.testJson();
 //        application.testXml();
 //        application.validateXml();
+        application.testBson();
+    }
+
+    private void testBson() {
+        TestObject testObject = createJsonTestObject();
+
+        logger.info("Serialize object '{}' to BSON", testObject);
+
+        byte[] bson = BsonSerializer.toBson(testObject);
+        logger.info("\n{}", Base64Utils.encodeToString(bson));
+
+        JsonTestObject newObject = BsonSerializer.fromBson(bson, JsonTestObject.class);
+        logger.info("{}", newObject);
     }
 
     private void validateXml() {
