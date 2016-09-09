@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.14"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+apply from: 'libraries.gradle'
+
+buildDir = "build"
+group 'ru.romanow.serialization'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+
+    compile "com.google.code.gson:gson:${gsonVersion}"
+
+    compile "com.google.guava:guava:${guavaVersion}"
+    compile "org.apache.commons:commons-lang3:${commonsLangVersion}"
+
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    testCompile "junit:junit:${junitVersion}"
+    testCompile "org.mockito:mockito-all:${mockitoVersion}"
+}
