@@ -62,7 +62,7 @@ protobuf {
         artifact = "com.google.protobuf:protoc:${protobufVersion}"
     }
 
-    generateProtoTasks.generatedFilesBaseDir = "$projectDir/src/generated"
+    generateProtoTasks.generatedFilesBaseDir = "$projectDir/src"
 }
 
 sourceSets {
