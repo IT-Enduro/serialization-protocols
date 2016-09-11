@@ -5,6 +5,7 @@ ext {
     bsonVersion = "2.7.0"
     msgpackVersion = "0.6.12"
     jacksonMsgpackVersion = "0.8.9"
+    protobufVersion = "3.0.0"
 
     guavaVersion = "19.0"
     commonsLangVersion = "3.4"

@@ -1,0 +1,14 @@
+option java_package = "ru.romanow.serialization.model";
+option java_outer_classname = "ProtobufObjectProto";
+
+message ProtobufObject {
+    required string message = 1;
+    required string code = 2;
+    optional Status status = 3 [default = DONE];
+}
+
+enum Status {
+    DONE = 1;
+    FAIL = 2;
+    PAUSED = 3;
+}
