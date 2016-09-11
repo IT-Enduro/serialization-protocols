@@ -1,5 +1,6 @@
-option java_package = "ru.romanow.serialization.model";
+option java_package = "ru.romanow.serialization.generated";
 option java_outer_classname = "ProtobufObjectProto";
+syntax = "proto3";
 
 message ProtobufObject {
     required string message = 1;

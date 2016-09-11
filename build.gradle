@@ -44,8 +44,9 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     compile "de.undercouch:bson4jackson:${bsonVersion}"
     compile "org.msgpack:msgpack:${msgpackVersion}"
-    compile "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
     compile "com.google.protobuf:protobuf-java:${protobufVersion}"
+
+    compile "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
 
     compile "com.google.guava:guava:${guavaVersion}"
     compile "org.apache.commons:commons-lang3:${commonsLangVersion}"
@@ -54,4 +55,29 @@ dependencies {
 
     testCompile "junit:junit:${junitVersion}"
     testCompile "org.mockito:mockito-all:${mockitoVersion}"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+
+    generateProtoTasks.generatedFilesBaseDir = "$projectDir/src/generated"
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/proto'
+        }
+        java {
+            srcDirs 'src/main/java'
+        }
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file("${protobuf.generatedFilesBaseDir}/main/java");
+    }
 }
