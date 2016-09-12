@@ -1,15 +1,16 @@
-option java_package = "ru.romanow.serialization.generated";
-option java_outer_classname = "ProtobufObjectProto";
 syntax = "proto3";
 
+option java_package = "ru.romanow.serialization.generated";
+option java_outer_classname = "ProtobufObjectProto";
+
 message ProtobufObject {
-    required string message = 1;
-    required string code = 2;
-    optional Status status = 3 [default = DONE];
+    string message = 1;
+    int32 code = 2;
+    Status status = 3;
 }
 
 enum Status {
-    DONE = 1;
-    FAIL = 2;
-    PAUSED = 3;
+    DONE = 0;
+    FAIL = 1;
+    PAUSED = 2;
 }

@@ -20,34 +20,39 @@ public final class ProtobufObjectProto {
   public enum Status
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>DONE = 1;</code>
+     * <code>DONE = 0;</code>
      */
-    DONE(1),
+    DONE(0),
     /**
-     * <code>FAIL = 2;</code>
+     * <code>FAIL = 1;</code>
      */
-    FAIL(2),
+    FAIL(1),
     /**
-     * <code>PAUSED = 3;</code>
+     * <code>PAUSED = 2;</code>
      */
-    PAUSED(3),
+    PAUSED(2),
+    UNRECOGNIZED(-1),
     ;
 
     /**
-     * <code>DONE = 1;</code>
+     * <code>DONE = 0;</code>
      */
-    public static final int DONE_VALUE = 1;
+    public static final int DONE_VALUE = 0;
     /**
-     * <code>FAIL = 2;</code>
+     * <code>FAIL = 1;</code>
      */
-    public static final int FAIL_VALUE = 2;
+    public static final int FAIL_VALUE = 1;
     /**
-     * <code>PAUSED = 3;</code>
+     * <code>PAUSED = 2;</code>
      */
-    public static final int PAUSED_VALUE = 3;
+    public static final int PAUSED_VALUE = 2;
 
 
     public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
       return value;
     }
 
@@ -61,9 +66,9 @@ public final class ProtobufObjectProto {
 
     public static Status forNumber(int value) {
       switch (value) {
-        case 1: return DONE;
-        case 2: return FAIL;
-        case 3: return PAUSED;
+        case 0: return DONE;
+        case 1: return FAIL;
+        case 2: return PAUSED;
         default: return null;
       }
     }
@@ -101,6 +106,9 @@ public final class ProtobufObjectProto {
         throw new java.lang.IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
       return VALUES[desc.getIndex()];
     }
 
@@ -118,39 +126,26 @@ public final class ProtobufObjectProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required string message = 1;</code>
-     */
-    boolean hasMessage();
-    /**
-     * <code>required string message = 1;</code>
+     * <code>optional string message = 1;</code>
      */
     java.lang.String getMessage();
     /**
-     * <code>required string message = 1;</code>
+     * <code>optional string message = 1;</code>
      */
     com.google.protobuf.ByteString
         getMessageBytes();
 
     /**
-     * <code>required string code = 2;</code>
+     * <code>optional int32 code = 2;</code>
      */
-    boolean hasCode();
-    /**
-     * <code>required string code = 2;</code>
-     */
-    java.lang.String getCode();
-    /**
-     * <code>required string code = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getCodeBytes();
+    int getCode();
 
     /**
-     * <code>optional .Status status = 3 [default = DONE];</code>
+     * <code>optional .Status status = 3;</code>
      */
-    boolean hasStatus();
+    int getStatusValue();
     /**
-     * <code>optional .Status status = 3 [default = DONE];</code>
+     * <code>optional .Status status = 3;</code>
      */
     ru.romanow.serialization.generated.ProtobufObjectProto.Status getStatus();
   }
@@ -167,14 +162,14 @@ public final class ProtobufObjectProto {
     }
     private ProtobufObject() {
       message_ = "";
-      code_ = "";
-      status_ = 1;
+      code_ = 0;
+      status_ = 0;
     }
 
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
-      return this.unknownFields;
+      return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
     }
     private ProtobufObject(
         com.google.protobuf.CodedInputStream input,
@@ -182,8 +177,6 @@ public final class ProtobufObjectProto {
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
       int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
         boolean done = false;
         while (!done) {
@@ -193,33 +186,26 @@ public final class ProtobufObjectProto {
               done = true;
               break;
             default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
+              if (!input.skipField(tag)) {
                 done = true;
               }
               break;
             }
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000001;
-              message_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              message_ = s;
               break;
             }
-            case 18: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000002;
-              code_ = bs;
+            case 16: {
+
+              code_ = input.readInt32();
               break;
             }
             case 24: {
               int rawValue = input.readEnum();
-              ru.romanow.serialization.generated.ProtobufObjectProto.Status value = ru.romanow.serialization.generated.ProtobufObjectProto.Status.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(3, rawValue);
-              } else {
-                bitField0_ |= 0x00000004;
-                status_ = rawValue;
-              }
+
+              status_ = rawValue;
               break;
             }
           }
@@ -230,7 +216,6 @@ public final class ProtobufObjectProto {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
@@ -246,17 +231,10 @@ public final class ProtobufObjectProto {
               ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject.class, ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject.Builder.class);
     }
 
-    private int bitField0_;
     public static final int MESSAGE_FIELD_NUMBER = 1;
     private volatile java.lang.Object message_;
     /**
-     * <code>required string message = 1;</code>
-     */
-    public boolean hasMessage() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required string message = 1;</code>
+     * <code>optional string message = 1;</code>
      */
     public java.lang.String getMessage() {
       java.lang.Object ref = message_;
@@ -266,14 +244,12 @@ public final class ProtobufObjectProto {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          message_ = s;
-        }
+        message_ = s;
         return s;
       }
     }
     /**
-     * <code>required string message = 1;</code>
+     * <code>optional string message = 1;</code>
      */
     public com.google.protobuf.ByteString
         getMessageBytes() {
@@ -290,61 +266,28 @@ public final class ProtobufObjectProto {
     }
 
     public static final int CODE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object code_;
+    private int code_;
     /**
-     * <code>required string code = 2;</code>
+     * <code>optional int32 code = 2;</code>
      */
-    public boolean hasCode() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required string code = 2;</code>
-     */
-    public java.lang.String getCode() {
-      java.lang.Object ref = code_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          code_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>required string code = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getCodeBytes() {
-      java.lang.Object ref = code_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        code_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getCode() {
+      return code_;
     }
 
     public static final int STATUS_FIELD_NUMBER = 3;
     private int status_;
     /**
-     * <code>optional .Status status = 3 [default = DONE];</code>
+     * <code>optional .Status status = 3;</code>
      */
-    public boolean hasStatus() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    public int getStatusValue() {
+      return status_;
     }
     /**
-     * <code>optional .Status status = 3 [default = DONE];</code>
+     * <code>optional .Status status = 3;</code>
      */
     public ru.romanow.serialization.generated.ProtobufObjectProto.Status getStatus() {
       ru.romanow.serialization.generated.ProtobufObjectProto.Status result = ru.romanow.serialization.generated.ProtobufObjectProto.Status.valueOf(status_);
-      return result == null ? ru.romanow.serialization.generated.ProtobufObjectProto.Status.DONE : result;
+      return result == null ? ru.romanow.serialization.generated.ProtobufObjectProto.Status.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -353,30 +296,21 @@ public final class ProtobufObjectProto {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasMessage()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasCode()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (!getMessageBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, message_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, code_);
+      if (code_ != 0) {
+        output.writeInt32(2, code_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (status_ != ru.romanow.serialization.generated.ProtobufObjectProto.Status.DONE.getNumber()) {
         output.writeEnum(3, status_);
       }
-      unknownFields.writeTo(output);
     }
 
     public int getSerializedSize() {
@@ -384,17 +318,17 @@ public final class ProtobufObjectProto {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (!getMessageBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, message_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, code_);
+      if (code_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, code_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (status_ != ru.romanow.serialization.generated.ProtobufObjectProto.Status.DONE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, status_);
       }
-      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -411,21 +345,11 @@ public final class ProtobufObjectProto {
       ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject other = (ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject) obj;
 
       boolean result = true;
-      result = result && (hasMessage() == other.hasMessage());
-      if (hasMessage()) {
-        result = result && getMessage()
-            .equals(other.getMessage());
-      }
-      result = result && (hasCode() == other.hasCode());
-      if (hasCode()) {
-        result = result && getCode()
-            .equals(other.getCode());
-      }
-      result = result && (hasStatus() == other.hasStatus());
-      if (hasStatus()) {
-        result = result && status_ == other.status_;
-      }
-      result = result && unknownFields.equals(other.unknownFields);
+      result = result && getMessage()
+          .equals(other.getMessage());
+      result = result && (getCode()
+          == other.getCode());
+      result = result && status_ == other.status_;
       return result;
     }
 
@@ -436,18 +360,12 @@ public final class ProtobufObjectProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
-      if (hasMessage()) {
-        hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-        hash = (53 * hash) + getMessage().hashCode();
-      }
-      if (hasCode()) {
-        hash = (37 * hash) + CODE_FIELD_NUMBER;
-        hash = (53 * hash) + getCode().hashCode();
-      }
-      if (hasStatus()) {
-        hash = (37 * hash) + STATUS_FIELD_NUMBER;
-        hash = (53 * hash) + status_;
-      }
+      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getMessage().hashCode();
+      hash = (37 * hash) + CODE_FIELD_NUMBER;
+      hash = (53 * hash) + getCode();
+      hash = (37 * hash) + STATUS_FIELD_NUMBER;
+      hash = (53 * hash) + status_;
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -567,11 +485,11 @@ public final class ProtobufObjectProto {
       public Builder clear() {
         super.clear();
         message_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        code_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        status_ = 1;
-        bitField0_ = (bitField0_ & ~0x00000004);
+
+        code_ = 0;
+
+        status_ = 0;
+
         return this;
       }
 
@@ -594,21 +512,9 @@ public final class ProtobufObjectProto {
 
       public ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject buildPartial() {
         ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject result = new ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.message_ = message_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.code_ = code_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.status_ = status_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -650,31 +556,21 @@ public final class ProtobufObjectProto {
 
       public Builder mergeFrom(ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject other) {
         if (other == ru.romanow.serialization.generated.ProtobufObjectProto.ProtobufObject.getDefaultInstance()) return this;
-        if (other.hasMessage()) {
-          bitField0_ |= 0x00000001;
+        if (!other.getMessage().isEmpty()) {
           message_ = other.message_;
           onChanged();
         }
-        if (other.hasCode()) {
-          bitField0_ |= 0x00000002;
-          code_ = other.code_;
-          onChanged();
+        if (other.getCode() != 0) {
+          setCode(other.getCode());
         }
-        if (other.hasStatus()) {
-          setStatus(other.getStatus());
+        if (other.status_ != 0) {
+          setStatusValue(other.getStatusValue());
         }
-        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasMessage()) {
-          return false;
-        }
-        if (!hasCode()) {
-          return false;
-        }
         return true;
       }
 
@@ -695,17 +591,10 @@ public final class ProtobufObjectProto {
         }
         return this;
       }
-      private int bitField0_;
 
       private java.lang.Object message_ = "";
       /**
-       * <code>required string message = 1;</code>
-       */
-      public boolean hasMessage() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string message = 1;</code>
+       * <code>optional string message = 1;</code>
        */
       public java.lang.String getMessage() {
         java.lang.Object ref = message_;
@@ -713,16 +602,14 @@ public final class ProtobufObjectProto {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            message_ = s;
-          }
+          message_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string message = 1;</code>
+       * <code>optional string message = 1;</code>
        */
       public com.google.protobuf.ByteString
           getMessageBytes() {
@@ -738,160 +625,119 @@ public final class ProtobufObjectProto {
         }
       }
       /**
-       * <code>required string message = 1;</code>
+       * <code>optional string message = 1;</code>
        */
       public Builder setMessage(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  
         message_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string message = 1;</code>
+       * <code>optional string message = 1;</code>
        */
       public Builder clearMessage() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        
         message_ = getDefaultInstance().getMessage();
         onChanged();
         return this;
       }
       /**
-       * <code>required string message = 1;</code>
+       * <code>optional string message = 1;</code>
        */
       public Builder setMessageBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  checkByteStringIsUtf8(value);
+        
         message_ = value;
         onChanged();
         return this;
       }
 
-      private java.lang.Object code_ = "";
+      private int code_ ;
       /**
-       * <code>required string code = 2;</code>
+       * <code>optional int32 code = 2;</code>
        */
-      public boolean hasCode() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+      public int getCode() {
+        return code_;
       }
       /**
-       * <code>required string code = 2;</code>
+       * <code>optional int32 code = 2;</code>
        */
-      public java.lang.String getCode() {
-        java.lang.Object ref = code_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            code_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>required string code = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getCodeBytes() {
-        java.lang.Object ref = code_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          code_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>required string code = 2;</code>
-       */
-      public Builder setCode(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+      public Builder setCode(int value) {
+        
         code_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string code = 2;</code>
+       * <code>optional int32 code = 2;</code>
        */
       public Builder clearCode() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        code_ = getDefaultInstance().getCode();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string code = 2;</code>
-       */
-      public Builder setCodeBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        code_ = value;
+        
+        code_ = 0;
         onChanged();
         return this;
       }
 
-      private int status_ = 1;
+      private int status_ = 0;
       /**
-       * <code>optional .Status status = 3 [default = DONE];</code>
+       * <code>optional .Status status = 3;</code>
        */
-      public boolean hasStatus() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+      public int getStatusValue() {
+        return status_;
       }
       /**
-       * <code>optional .Status status = 3 [default = DONE];</code>
+       * <code>optional .Status status = 3;</code>
+       */
+      public Builder setStatusValue(int value) {
+        status_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .Status status = 3;</code>
        */
       public ru.romanow.serialization.generated.ProtobufObjectProto.Status getStatus() {
         ru.romanow.serialization.generated.ProtobufObjectProto.Status result = ru.romanow.serialization.generated.ProtobufObjectProto.Status.valueOf(status_);
-        return result == null ? ru.romanow.serialization.generated.ProtobufObjectProto.Status.DONE : result;
+        return result == null ? ru.romanow.serialization.generated.ProtobufObjectProto.Status.UNRECOGNIZED : result;
       }
       /**
-       * <code>optional .Status status = 3 [default = DONE];</code>
+       * <code>optional .Status status = 3;</code>
        */
       public Builder setStatus(ru.romanow.serialization.generated.ProtobufObjectProto.Status value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000004;
+        
         status_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>optional .Status status = 3 [default = DONE];</code>
+       * <code>optional .Status status = 3;</code>
        */
       public Builder clearStatus() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        status_ = 1;
+        
+        status_ = 0;
         onChanged();
         return this;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return this;
       }
 
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
+        return this;
       }
 
 
@@ -908,7 +754,7 @@ public final class ProtobufObjectProto {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<ProtobufObject>
+    private static final com.google.protobuf.Parser<ProtobufObject>
         PARSER = new com.google.protobuf.AbstractParser<ProtobufObject>() {
       public ProtobufObject parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
@@ -947,12 +793,12 @@ public final class ProtobufObjectProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\024ProtobufObject.proto\"N\n\016ProtobufObject" +
-      "\022\017\n\007message\030\001 \002(\t\022\014\n\004code\030\002 \002(\t\022\035\n\006statu" +
-      "s\030\003 \001(\0162\007.Status:\004DONE*(\n\006Status\022\010\n\004DONE" +
-      "\020\001\022\010\n\004FAIL\020\002\022\n\n\006PAUSED\020\003B9\n\"ru.romanow.s" +
-      "erialization.generatedB\023ProtobufObjectPr" +
-      "oto"
+      "\n\024ProtobufObject.proto\"H\n\016ProtobufObject" +
+      "\022\017\n\007message\030\001 \001(\t\022\014\n\004code\030\002 \001(\005\022\027\n\006statu" +
+      "s\030\003 \001(\0162\007.Status*(\n\006Status\022\010\n\004DONE\020\000\022\010\n\004" +
+      "FAIL\020\001\022\n\n\006PAUSED\020\002B9\n\"ru.romanow.seriali" +
+      "zation.generatedB\023ProtobufObjectProtob\006p" +
+      "roto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

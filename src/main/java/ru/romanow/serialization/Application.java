@@ -1,24 +1,25 @@
 package ru.romanow.serialization;
 
+import ch.qos.logback.core.util.CloseUtil;
 import com.google.common.io.Closeables;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.Base64Utils;
+import ru.romanow.serialization.generated.ProtobufObjectProto;
+import ru.romanow.serialization.model.NewTestObject;
 import ru.romanow.serialization.model.Status;
 import ru.romanow.serialization.model.TestObject;
-import ru.romanow.serialization.model.NewTestObject;
 import ru.romanow.serialization.model.XmlTestObject;
 import ru.romanow.serialization.services.BsonSerializer;
 import ru.romanow.serialization.services.JsonSerializer;
 import ru.romanow.serialization.services.MsgpackSerializer;
 import ru.romanow.serialization.services.XmlSerializer;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +34,40 @@ public class Application {
 //        application.testJson();
 //        application.testXml();
 //        application.validateXml();
-        application.testBson();
-        application.testMsgPack();
+//        application.testBson();
+//        application.testMsgPack();
+        application.testProtobuf();
+    }
+
+    private void testProtobuf() throws UnsupportedEncodingException {
+        ProtobufObjectProto.ProtobufObject testObject = ProtobufObjectProto
+                .ProtobufObject
+                .newBuilder()
+                .setCode(RandomUtils.nextInt(0, 100))
+                .setMessage(RandomStringUtils.randomAlphabetic(10))
+                .setStatus(ProtobufObjectProto.Status.FAIL)
+                .build();
+
+        logger.info("Serialize object '{}' to Protobuf", testObject);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        try {
+            testObject.writeTo(stream);
+        } catch (IOException exception) {
+            logger.error("", exception);
+        }
+
+        CloseUtil.closeQuietly(stream);
+        byte[] object = stream.toByteArray();
+        logger.info("{}", Base64Utils.encodeToString(object));
+
+        try {
+            ProtobufObjectProto.ProtobufObject parsedObject =
+                    ProtobufObjectProto.ProtobufObject.parseFrom(object);
+            logger.info("\n{}", parsedObject);
+        } catch (InvalidProtocolBufferException exception) {
+            logger.error("", exception);
+        }
     }
 
     private void testJson() {
