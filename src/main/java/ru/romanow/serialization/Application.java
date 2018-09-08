@@ -7,6 +7,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.Base64Utils;
 import ru.romanow.serialization.generated.ProtobufObjectProto;
@@ -22,21 +24,24 @@ import ru.romanow.serialization.services.XmlSerializer;
 import java.io.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by romanow on 02.09.16
- */
 @SpringBootApplication
-public class Application {
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
+public class Application
+        implements CommandLineRunner {
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     public static void main(String[] args) throws Exception {
-        Application application = new Application();
-//        application.testJson();
-//        application.testXml();
-//        application.validateXml();
-//        application.testBson();
-//        application.testMsgPack();
-        application.testProtobuf();
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Override
+    public void run(String... args)
+            throws Exception {
+//        testJson();
+//        testXml();
+//        validateXml();
+//        testBson();
+//        testMsgPack();
+        testProtobuf();
     }
 
     private void testProtobuf() throws UnsupportedEncodingException {

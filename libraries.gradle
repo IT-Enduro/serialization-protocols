@@ -1,17 +1,8 @@
 ext {
-    gsonVersion = "2.7"
-    jaxbVersion = "2.2.12"
-    jacksonVersion = "2.8.2"
-    bsonVersion = "2.7.0"
+    guavaVersion = "20.0"
+    bsonVersion = "2.9.2"
+    jacksonMsgpackVersion = "0.8.16"
     msgpackVersion = "0.6.12"
-    jacksonMsgpackVersion = "0.8.9"
-    protobufVersion = "3.0.0"
-
-    guavaVersion = "19.0"
-    commonsLangVersion = "3.4"
-
-    logbackVersion = "1.1.7"
-
-    junitVersion = "4.12"
-    mockitoVersion = "1.9.5"
+    protobufVersion = "3.6.1"
+    lombokVersion = "1.18.2"
 }

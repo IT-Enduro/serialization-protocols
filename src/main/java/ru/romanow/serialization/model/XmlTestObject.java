@@ -1,6 +1,11 @@
 package ru.romanow.serialization.model;
 
 import com.google.common.base.MoreObjects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,9 +13,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
-/**
- * Created by ronin on 09.09.16
- */
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XmlTestObject
@@ -26,40 +33,4 @@ public class XmlTestObject
 
     @XmlElement(name = "status")
     protected Status status;
-
-    public String getMessage() {
-        return message;
-    }
-
-    public XmlTestObject setMessage(String message) {
-        this.message = message;
-        return this;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public XmlTestObject setCode(Integer code) {
-        this.code = code;
-        return this;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public XmlTestObject setStatus(Status status) {
-        this.status = status;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                          .add("message", message)
-                          .add("code", code)
-                          .add("status", status)
-                          .toString();
-    }
 }

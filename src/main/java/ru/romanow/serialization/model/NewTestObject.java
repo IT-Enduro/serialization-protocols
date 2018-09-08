@@ -1,35 +1,23 @@
 package ru.romanow.serialization.model;
 
 import com.google.common.base.MoreObjects;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
-/**
- * Created by ronin on 09.09.16
- */
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class NewTestObject
         extends TestObject
         implements Serializable {
     private static final long serialVersionUID = -5937186496112650685L;
 
     private String version;
-
-    public String getVersion() {
-        return version;
-    }
-
-    public NewTestObject setVersion(String version) {
-        this.version = version;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                          .add("message", message)
-                          .add("code", code)
-                          .add("status", status)
-                          .add("version", version)
-                          .toString();
-    }
 }
