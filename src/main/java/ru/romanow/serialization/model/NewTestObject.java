@@ -1,6 +1,5 @@
 package ru.romanow.serialization.model;
 
-import com.google.common.base.MoreObjects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

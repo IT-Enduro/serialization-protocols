@@ -24,12 +24,13 @@ import ru.romanow.serialization.services.XmlSerializer;
 import java.io.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @SpringBootApplication
 public class Application
         implements CommandLineRunner {
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
@@ -44,7 +45,7 @@ public class Application
         testProtobuf();
     }
 
-    private void testProtobuf() throws UnsupportedEncodingException {
+    private void testProtobuf() {
         ProtobufObjectProto.ProtobufObject testObject = ProtobufObjectProto
                 .ProtobufObject
                 .newBuilder()
@@ -87,7 +88,7 @@ public class Application
         logger.info("{}", newObject);
     }
 
-    private void testXml() throws Exception {
+    private void testXml() {
         TestObject testObject = createXmlTestObject();
         logger.info("Serialize object '{}' to XML", testObject);
 

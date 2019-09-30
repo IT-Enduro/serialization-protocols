@@ -8,10 +8,6 @@ buildscript {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "4.10"
-}
-
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
@@ -21,8 +17,8 @@ apply from: 'libraries.gradle'
 
 group 'ru.romanow.serialization'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 idea {
     module {
@@ -36,22 +32,23 @@ repositories {
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter"
-    compile "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
 
-    compile "com.google.code.gson:gson"
-    compile "com.google.guava:guava:${guavaVersion}"
-    compile "org.apache.commons:commons-lang3"
+    implementation "com.google.code.gson:gson"
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "org.apache.commons:commons-lang3"
 
-    compile "javax.xml.bind:jaxb-api"
-    compile "com.fasterxml.jackson.core:jackson-core"
-    compile "com.fasterxml.jackson.core:jackson-databind"
-    compile "de.undercouch:bson4jackson:${bsonVersion}"
-    compile "org.msgpack:msgpack:${msgpackVersion}"
-    compile "com.google.protobuf:protobuf-java:${protobufVersion}"
-    compile "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
+    implementation "javax.xml.bind:jaxb-api"
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "de.undercouch:bson4jackson:${bsonVersion}"
+    implementation "org.msgpack:msgpack:${msgpackVersion}"
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+    implementation "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
 
-    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
 protobuf {
@@ -59,13 +56,13 @@ protobuf {
         artifact = "com.google.protobuf:protoc:${protobufVersion}"
     }
 
-    generateProtoTasks.generatedFilesBaseDir = "$projectDir/src"
+//    generateProtoTasks.generatedFilesBaseDir = "$projectDir/src"
 }
 
 sourceSets {
     main {
         proto {
-            srcDir 'src/main/proto'
+            srcDir "${project.buildDir}/generated/source/proto"
         }
         java {
             srcDirs 'src/main/java'
@@ -75,6 +72,6 @@ sourceSets {
 
 idea {
     module {
-        sourceDirs += file("${protobuf.generatedFilesBaseDir}/main/java");
+        sourceDirs += file("${protobuf.generatedFilesBaseDir}/generated/java");
     }
 }
