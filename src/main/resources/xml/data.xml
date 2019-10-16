@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xmlTestObject>
     <code>200</code>
-    <message>d9vSdvXDl0</message>
-    <status>fsd</status>
+    <message>Hello, world</message>
+    <status>OK</status>
+    <innerData priority="14">NEW ITEM DATA</innerData>
+    <publicDataList>
+        <publicData>
+            <key>KEY1</key>
+            <data>NEW-ITEM-1</data>
+        </publicData>
+        <publicData>
+            <key>KEY2</key>
+            <data>NEW-ITEM-2</data>
+        </publicData>
+    </publicDataList>
 </xmlTestObject>

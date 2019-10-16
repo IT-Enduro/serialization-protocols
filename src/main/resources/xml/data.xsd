@@ -20,4 +20,27 @@
       </xs:restriction>
     </xs:simpleType>
   </xs:element>
+  <xs:element name="innerData">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="priority" type="xs:unsignedByte" use="required" />
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="publicDataList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="publicData">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="key" type="xs:string" />
+              <xs:element name="data" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

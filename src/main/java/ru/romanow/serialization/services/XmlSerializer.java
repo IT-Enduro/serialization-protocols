@@ -13,9 +13,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-/**
- * Created by ronin on 09.09.16
- */
 public class XmlSerializer {
     private static final Logger logger = LoggerFactory.getLogger(XmlSerializer.class);
 

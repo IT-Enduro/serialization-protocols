@@ -6,11 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -32,4 +30,10 @@ public class XmlTestObject
 
     @XmlElement(name = "status")
     protected Status status;
+
+    @XmlElement(name = "innerData")
+    protected InnerData innerData;
+
+    @XmlElementWrapper(name = "publicDataList")
+    protected List<PublicData> publicData;
 }

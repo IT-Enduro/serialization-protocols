@@ -3,9 +3,6 @@ package ru.romanow.serialization.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-/**
- * Created by ronin on 09.09.16
- */
 public class JsonSerializer {
 
     private static final Gson gson =

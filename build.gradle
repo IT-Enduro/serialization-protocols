@@ -40,8 +40,10 @@ dependencies {
     implementation "org.apache.commons:commons-lang3"
 
     implementation "javax.xml.bind:jaxb-api"
+    implementation "org.glassfish.jaxb:jaxb-runtime"
     implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.jayway.jsonpath:json-path"
     implementation "de.undercouch:bson4jackson:${bsonVersion}"
     implementation "org.msgpack:msgpack:${msgpackVersion}"
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"

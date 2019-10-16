@@ -5,9 +5,6 @@ import de.undercouch.bson4jackson.BsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by ronin on 10.09.16
- */
 public class BsonSerializer {
     private static final Logger logger = LoggerFactory.getLogger(BsonSerializer.class);
 

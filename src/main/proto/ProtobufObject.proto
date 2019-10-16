@@ -3,10 +3,22 @@ syntax = "proto3";
 option java_package = "ru.romanow.serialization.generated";
 option java_outer_classname = "ProtobufObjectProto";
 
-message ProtobufObject {
+message TestObject {
     string message = 1;
     int32 code = 2;
     Status status = 3;
+    InnerData innerData = 4;
+    repeated PublicData publicData = 5;
+}
+
+message InnerData {
+    string code = 1;
+    int32 priority = 2;
+}
+
+message PublicData {
+    string key = 1;
+    string data = 2;
 }
 
 enum Status {
