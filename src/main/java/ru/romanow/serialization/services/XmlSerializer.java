@@ -61,7 +61,7 @@ public class XmlSerializer {
             StringReader reader = new StringReader(xml);
             unmarshaller.unmarshal(reader);
         } catch (Exception exception) {
-            logger.error(exception.getCause().getMessage());
+            logger.error("", exception);
             valid = false;
         }
 

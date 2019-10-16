@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Base64Utils;
 import ru.romanow.serialization.generated.ProtobufObjectProto;
 import ru.romanow.serialization.model.*;
@@ -36,9 +37,9 @@ public class Application
 
     @Override
     public void run(String... args) {
-//        testJson();
-        testXml();
-//        validateXml();
+        testJson();
+//        testXml();
+        validateXml();
 //        testBson();
 //        testMsgPack();
 //        testProtobuf();
@@ -99,7 +100,7 @@ public class Application
     }
 
     private void validateXml() {
-        try (InputStream stream = ClassLoader.class.getResourceAsStream("/xml/data.xml")) {
+        try (InputStream stream = new ClassPathResource("/xml/data.xml").getInputStream()) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
                 String xml = reader.lines().collect(Collectors.joining("\n"));
 
