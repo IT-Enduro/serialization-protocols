@@ -1,10 +1,14 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "com.google.protobuf:protobuf-gradle-plugin:${protobufPluginVersion}"
+        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:${avroPluginVersion}"
     }
 }
 
@@ -13,9 +17,8 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.google.protobuf'
+apply plugin: "com.commercehub.gradle.plugin.avro"
 apply from: 'libraries.gradle'
-
-group 'ru.romanow.serialization'
 
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
@@ -44,6 +47,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.jayway.jsonpath:json-path"
+    implementation "org.apache.avro:avro:${avroVersion}"
     implementation "de.undercouch:bson4jackson:${bsonVersion}"
     implementation "org.msgpack:msgpack:${msgpackVersion}"
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
@@ -57,8 +61,6 @@ protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${protobufVersion}"
     }
-
-//    generateProtoTasks.generatedFilesBaseDir = "$projectDir/src"
 }
 
 sourceSets {
