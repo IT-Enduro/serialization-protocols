@@ -2,7 +2,7 @@
 <xmlTestObject>
     <code>200</code>
     <message>Hello, world</message>
-    <status>OK</status>
+    <status>DONE</status>
     <innerData priority="14">NEW ITEM DATA</innerData>
     <publicDataList>
         <publicData>
