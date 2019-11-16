@@ -20,8 +20,6 @@ import java.util.List;
 public class XmlTestObject
         extends TestObject
         implements Serializable {
-    private static final long serialVersionUID = 632112641149051390L;
-
     @XmlElement(name = "message")
     protected String message;
 

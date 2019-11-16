@@ -1,18 +1,20 @@
 package ru.romanow.serialization;
 
-import ch.qos.logback.core.util.CloseUtil;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
+import org.apache.avro.Schema;
+import org.apache.avro.SchemaBuilder;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.io.JsonEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.Base64Utils;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import ru.romanow.serialization.generated.ProtobufObjectProto;
 import ru.romanow.serialization.model.*;
 import ru.romanow.serialization.services.BsonSerializer;
@@ -22,8 +24,10 @@ import ru.romanow.serialization.services.XmlSerializer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,36 +36,77 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
+import static org.springframework.util.Base64Utils.encodeToString;
 
 @SuppressWarnings("unused")
 @SpringBootApplication
-public class Application
+public class SerializationApplication
         implements CommandLineRunner {
-    private final Logger logger = LoggerFactory.getLogger(Application.class);
+    private final Logger logger = LoggerFactory.getLogger(SerializationApplication.class);
     private static final String XML_DATA_FILE = "/data/xml-data.xml";
     private static final String JSON_DATA_FILE = "/data/json-data.json";
     private static final String XPATH = "//key[text()='KEY1']";
     private static final String JSON_PATH = "$..[?(@.key == 'KEY1')].key";
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(SerializationApplication.class, args);
     }
 
     @Override
     public void run(String... args) {
-        testJson();
-        testXml();
-        validateXml();
-        testXPath();
-        testJsonPath();
-        testBson();
-        testMsgPack();
-        testProtobuf();
+//        testJson();
+//        testXml();
+//        validateXml();
+//        testXPath();
+//        testJsonPath();
+//        testBson();
+//        testMsgPack();
+//        testProtobuf();
         testAvro();
     }
 
     private void testAvro() {
         logger.info("\n==================== Start testAvro ====================");
+
+//        final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
+
+        final Schema status = SchemaBuilder
+                .enumeration("status")
+                .namespace("ru.romanow.serialization")
+                .symbols("DONE", "FAIL", "PAUSED");
+        final Schema innerData = SchemaBuilder
+                .record("InnerData")
+                .namespace("ru.romanow.serialization")
+                .fields()
+                .optionalString("code")
+                .optionalInt("priority")
+                .endRecord();
+        final Schema testObjectSchema = SchemaBuilder
+                .record("TestObject")
+                .namespace("ru.romanow.serialization")
+                .fields()
+                .optionalString("message")
+                .optionalInt("code")
+                .name("status").type(status).noDefault()
+                .name("innerData").type(innerData).noDefault()
+                .endRecord();
+
+        logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
+
+        final TestObject testObject = createTestObject();
+
+        DatumWriter<TestObject> writer = new GenericDatumWriter<>(testObjectSchema);
+        byte[] data = new byte[0];
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
+            writer.write(testObject, jsonEncoder);
+            jsonEncoder.flush();
+            data = stream.toByteArray();
+        } catch (IOException exception) {
+            logger.error("", exception);
+        }
+
+        logger.info("Serialized object", encodeToString(data));
 
         logger.info("\n==================== Finish testAvro ====================");
     }
@@ -117,7 +162,7 @@ public class Application
             testObject.writeTo(stream);
             byte[] object = stream.toByteArray();
 
-            logger.info("{}", Base64Utils.encodeToString(object));
+            logger.info("{}", encodeToString(object));
 
             ProtobufObjectProto.TestObject parsedObject =
                     ProtobufObjectProto.TestObject.parseFrom(object);
@@ -177,7 +222,7 @@ public class Application
         logger.info("Serialize object '{}' to BSON", testObject);
 
         byte[] bson = BsonSerializer.toBson(testObject);
-        logger.info("\n{}", Base64Utils.encodeToString(bson));
+        logger.info("\n{}", encodeToString(bson));
 
         TestObject newObject = BsonSerializer.fromBson(bson, TestObject.class);
         logger.info("{}", newObject);
@@ -193,7 +238,7 @@ public class Application
         logger.info("Serialize object '{}' to MsgPack", testObject);
 
         byte[] bson = MsgpackSerializer.toMsgpack(testObject);
-        logger.info("\n{}", Base64Utils.encodeToString(bson));
+        logger.info("\n{}", encodeToString(bson));
 
         TestObject newObject = MsgpackSerializer.fromMsgpack(bson, TestObject.class);
         logger.info("{}", newObject);

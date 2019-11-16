@@ -17,8 +17,6 @@ import java.io.Serializable;
 public class NewTestObject
         extends TestObject
         implements Serializable {
-    private static final long serialVersionUID = -5937186496112650685L;
-
     private String version;
 
     @Override
