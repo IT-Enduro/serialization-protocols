@@ -4,11 +4,10 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
-import org.apache.avro.data.Json;
-import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.io.*;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.reflect.ReflectDatumReader;
+import org.apache.avro.reflect.ReflectDatumWriter;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.slf4j.Logger;
@@ -69,11 +68,12 @@ public class SerializationApplication
 //        testBson();
 //        testMsgPack();
 //        testProtobuf();
+//        testAvroGenerated();
         testAvro();
     }
 
-    private void testAvro() {
-        logger.info("\n==================== Start testAvro ====================");
+    private void testAvroGenerated() {
+        logger.info("\n==================== Start testAvroGenerated ====================");
 
         final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
 
@@ -113,8 +113,8 @@ public class SerializationApplication
 
         byte[] data = new byte[0];
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            DatumWriter<AvroTestObject> writer = new SpecificDatumWriter<>(avroTestObject.getSchema());
-            JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
+            final DatumWriter<AvroTestObject> writer = new SpecificDatumWriter<>(avroTestObject.getSchema());
+            final JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
             writer.write(avroTestObject, jsonEncoder);
             jsonEncoder.flush();
             data = stream.toByteArray();
@@ -124,10 +124,67 @@ public class SerializationApplication
 
         logger.info("Serialized object '{}'", new String(data));
 
-        AvroTestObject testObject = null;
-        DatumReader<AvroTestObject> reader = new SpecificDatumReader<>(AvroTestObject.class);
+        AvroTestObject serialized = null;
+        final DatumReader<AvroTestObject> reader = new SpecificDatumReader<>(AvroTestObject.class);
         try {
             final JsonDecoder jsonDecoder = DecoderFactory.get().jsonDecoder(AvroTestObject.getClassSchema(), new String(data));
+            serialized = reader.read(null, jsonDecoder);
+        } catch (IOException exception) {
+            logger.error("", exception);
+        }
+
+        logger.info("Deserialized object '{}'", serialized.toString());
+
+        logger.info("\n==================== Finish testAvroGenerated ====================");
+    }
+
+    private void testAvro() {
+        logger.info("\n==================== Start testAvro ====================");
+
+        final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
+
+//        final Schema statusSchema = SchemaBuilder
+//                .enumeration("status")
+//                .namespace("ru.romanow.serialization")
+//                .symbols("DONE", "FAIL", "PAUSED");
+//        final Schema innerData = SchemaBuilder
+//                .record("InnerData")
+//                .namespace("ru.romanow.serialization")
+//                .fields()
+//                .optionalString("code")
+//                .optionalInt("priority")
+//                .endRecord();
+//        final Schema testObjectSchema = SchemaBuilder
+//                .record("TestObject")
+//                .namespace("ru.romanow.serialization")
+//                .fields()
+//                .optionalString("message")
+//                .optionalInt("code")
+//                .name("status").type(statusSchema).noDefault()
+//                .name("innerData").type(innerData).noDefault()
+//                .endRecord();
+
+        logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
+
+        TestObject testObject = createTestObject();
+
+        byte[] data = new byte[0];
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            final DatumWriter<TestObject> writer = new ReflectDatumWriter<>(testObjectSchema);
+            final JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
+            writer.write(testObject, jsonEncoder);
+            jsonEncoder.flush();
+            data = stream.toByteArray();
+        } catch (IOException exception) {
+            logger.error("", exception);
+        }
+
+        logger.info("Serialized object '{}'", new String(data));
+
+        testObject = null;
+        final DatumReader<TestObject> reader = new ReflectDatumReader<>(TestObject.class);
+        try {
+            final JsonDecoder jsonDecoder = DecoderFactory.get().jsonDecoder(testObjectSchema, new String(data));
             testObject = reader.read(null, jsonDecoder);
         } catch (IOException exception) {
             logger.error("", exception);
