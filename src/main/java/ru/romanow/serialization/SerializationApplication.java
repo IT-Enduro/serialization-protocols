@@ -4,10 +4,13 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.apache.avro.data.Json;
 import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.io.DatumWriter;
-import org.apache.avro.io.EncoderFactory;
-import org.apache.avro.io.JsonEncoder;
+import org.apache.avro.io.*;
+import org.apache.avro.reflect.ReflectData;
+import org.apache.avro.reflect.ReflectDatumReader;
+import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.avro.specific.SpecificDatumWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -15,6 +18,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.ClassPathResource;
 import org.w3c.dom.Document;
+import ru.romanow.serialization.avro.AvroInnerData;
+import ru.romanow.serialization.avro.AvroPublicData;
+import ru.romanow.serialization.avro.AvroStatus;
+import ru.romanow.serialization.avro.AvroTestObject;
 import ru.romanow.serialization.generated.ProtobufObjectProto;
 import ru.romanow.serialization.model.*;
 import ru.romanow.serialization.services.BsonSerializer;
@@ -68,45 +75,65 @@ public class SerializationApplication
     private void testAvro() {
         logger.info("\n==================== Start testAvro ====================");
 
-//        final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
+        final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
 
-        final Schema status = SchemaBuilder
-                .enumeration("status")
-                .namespace("ru.romanow.serialization")
-                .symbols("DONE", "FAIL", "PAUSED");
-        final Schema innerData = SchemaBuilder
-                .record("InnerData")
-                .namespace("ru.romanow.serialization")
-                .fields()
-                .optionalString("code")
-                .optionalInt("priority")
-                .endRecord();
-        final Schema testObjectSchema = SchemaBuilder
-                .record("TestObject")
-                .namespace("ru.romanow.serialization")
-                .fields()
-                .optionalString("message")
-                .optionalInt("code")
-                .name("status").type(status).noDefault()
-                .name("innerData").type(innerData).noDefault()
-                .endRecord();
+//        final Schema status = SchemaBuilder
+//                .enumeration("status")
+//                .namespace("ru.romanow.serialization")
+//                .symbols("DONE", "FAIL", "PAUSED");
+//        final Schema innerData = SchemaBuilder
+//                .record("InnerData")
+//                .namespace("ru.romanow.serialization")
+//                .fields()
+//                .optionalString("code")
+//                .optionalInt("priority")
+//                .endRecord();
+//        final Schema testObjectSchema = SchemaBuilder
+//                .record("TestObject")
+//                .namespace("ru.romanow.serialization")
+//                .fields()
+//                .optionalString("message")
+//                .optionalInt("code")
+//                .name("status").type(status).noDefault()
+//                .name("innerData").type(innerData).noDefault()
+//                .endRecord();
 
         logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
 
-        final TestObject testObject = createTestObject();
+        final AvroTestObject avroTestObject = AvroTestObject.newBuilder()
+                .setCode(nextInt(0, 100))
+                .setMessage(randomAlphanumeric(10))
+                .setStatus(AvroStatus.DONE)
+                .setInnerData(AvroInnerData.newBuilder().setCode(randomAlphanumeric(15)).setPriority(nextInt(10, 15)).build())
+                .setPublicData(newArrayList(
+                        AvroPublicData.newBuilder().setKey(randomAlphabetic(8)).setData(randomAlphanumeric(15)).build(),
+                        AvroPublicData.newBuilder().setKey(randomAlphabetic(8)).setData(randomAlphanumeric(15)).build()
+                ))
+                .build();
 
-        DatumWriter<TestObject> writer = new GenericDatumWriter<>(testObjectSchema);
         byte[] data = new byte[0];
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            DatumWriter<AvroTestObject> writer = new SpecificDatumWriter<>(avroTestObject.getSchema());
             JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
-            writer.write(testObject, jsonEncoder);
+            writer.write(avroTestObject, jsonEncoder);
             jsonEncoder.flush();
             data = stream.toByteArray();
         } catch (IOException exception) {
             logger.error("", exception);
         }
 
-        logger.info("Serialized object", encodeToString(data));
+        logger.info("Serialized object '{}'", new String(data));
+
+        AvroTestObject testObject = null;
+        DatumReader<AvroTestObject> reader = new SpecificDatumReader<>(AvroTestObject.class);
+        try {
+            final JsonDecoder jsonDecoder = DecoderFactory.get().jsonDecoder(AvroTestObject.getClassSchema(), new String(data));
+            testObject = reader.read(null, jsonDecoder);
+        } catch (IOException exception) {
+            logger.error("", exception);
+        }
+
+        logger.info("Deserialized object '{}'", testObject.toString());
 
         logger.info("\n==================== Finish testAvro ====================");
     }

@@ -1,0 +1,49 @@
+{
+  "type" : "record",
+  "name" : "AvroTestObject",
+  "namespace" : "ru.romanow.serialization.avro",
+  "fields" : [ {
+    "name" : "message",
+    "type" : "string"
+  }, {
+    "name" : "code",
+    "type" : "int"
+  }, {
+    "name" : "status",
+    "type" : {
+      "type" : "enum",
+      "name" : "AvroStatus",
+      "symbols" : [ "DONE", "FAIL", "PAUSED" ]
+    }
+  }, {
+    "name" : "innerData",
+    "type" : {
+      "type" : "record",
+      "name" : "AvroInnerData",
+      "fields" : [ {
+        "name" : "code",
+        "type" : "string"
+      }, {
+        "name" : "priority",
+        "type" : "int"
+      } ]
+    }
+  }, {
+    "name" : "publicData",
+    "type" : {
+      "type" : "array",
+      "items" : {
+        "type" : "record",
+        "name" : "AvroPublicData",
+        "fields" : [ {
+          "name" : "key",
+          "type" : "string"
+        }, {
+          "name" : "data",
+          "type" : "string"
+        } ]
+      },
+      "java-class" : "java.util.List"
+    }
+  } ]
+}

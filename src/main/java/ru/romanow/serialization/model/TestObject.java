@@ -12,8 +12,7 @@ import java.util.List;
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class TestObject
-        implements Serializable {
+public class TestObject {
     protected String message;
     protected Integer code;
     protected Status status;

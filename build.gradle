@@ -1,23 +1,13 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "com.google.protobuf:protobuf-gradle-plugin:${protobufPluginVersion}"
-        classpath "com.commercehub.gradle.plugin:gradle-avro-plugin:${avroPluginVersion}"
-    }
+plugins {
+    id "java"
+    id "idea"
+    id "org.springframework.boot" version "2.1.7.RELEASE"
+    id "io.spring.dependency-management" version "1.0.5.RELEASE"
+    id "com.commercehub.gradle.plugin.avro-base" version "0.9.1"
+    id "com.google.protobuf" version "0.8.10"
+
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.google.protobuf'
-apply plugin: "com.commercehub.gradle.plugin.avro"
 apply from: 'libraries.gradle'
 
 sourceCompatibility = 1.11
@@ -57,6 +47,11 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
+task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
+    source("src/main/resources/data/schema.avsc")
+    outputDir = file("${project.buildDir}/generated/source/avro")
+}
+
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${protobufVersion}"
@@ -65,17 +60,19 @@ protobuf {
 
 sourceSets {
     main {
-        proto {
-            srcDir "${project.buildDir}/generated/source/proto"
-        }
         java {
-            srcDirs 'src/main/java'
+            srcDirs 'src/main/java', "${project.buildDir}/generated/source/proto", "${project.buildDir}/generated/source/avro"
         }
     }
 }
 
+compileJava.dependsOn(generateAvro)
+
 idea {
     module {
-        sourceDirs += file("${protobuf.generatedFilesBaseDir}/generated/java");
+        sourceDirs += [
+                file("${project.buildDir}/generated/source/avro"),
+                file("${project.buildDir}/generated/source/proto")
+        ]
     }
 }
