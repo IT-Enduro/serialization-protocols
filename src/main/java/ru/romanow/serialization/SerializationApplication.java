@@ -68,35 +68,14 @@ public class SerializationApplication
 //        testBson();
 //        testMsgPack();
 //        testProtobuf();
-//        testAvroGenerated();
-        testAvro();
+        testAvroGenerated();
+//        testAvro();
     }
 
     private void testAvroGenerated() {
         logger.info("\n==================== Start testAvroGenerated ====================");
 
-        final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
-
-//        final Schema status = SchemaBuilder
-//                .enumeration("status")
-//                .namespace("ru.romanow.serialization")
-//                .symbols("DONE", "FAIL", "PAUSED");
-//        final Schema innerData = SchemaBuilder
-//                .record("InnerData")
-//                .namespace("ru.romanow.serialization")
-//                .fields()
-//                .optionalString("code")
-//                .optionalInt("priority")
-//                .endRecord();
-//        final Schema testObjectSchema = SchemaBuilder
-//                .record("TestObject")
-//                .namespace("ru.romanow.serialization")
-//                .fields()
-//                .optionalString("message")
-//                .optionalInt("code")
-//                .name("status").type(status).noDefault()
-//                .name("innerData").type(innerData).noDefault()
-//                .endRecord();
+        final Schema testObjectSchema = AvroTestObject.getClassSchema();
 
         logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
 
