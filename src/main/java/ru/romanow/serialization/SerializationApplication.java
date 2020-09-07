@@ -141,28 +141,33 @@ public class SerializationApplication
     private void testAvro() {
         logger.info("\n==================== Start testAvro ====================");
 
-        final Schema testObjectSchema = ReflectData.get().getSchema(TestObject.class);
-
-//        final Schema statusSchema = SchemaBuilder
-//                .enumeration("status")
-//                .namespace("ru.romanow.serialization")
-//                .symbols("DONE", "FAIL", "PAUSED");
-//        final Schema innerData = SchemaBuilder
-//                .record("InnerData")
-//                .namespace("ru.romanow.serialization")
-//                .fields()
-//                .optionalString("code")
-//                .optionalInt("priority")
-//                .endRecord();
-//        final Schema testObjectSchema = SchemaBuilder
-//                .record("TestObject")
-//                .namespace("ru.romanow.serialization")
-//                .fields()
-//                .optionalString("message")
-//                .optionalInt("code")
-//                .name("status").type(statusSchema).noDefault()
-//                .name("innerData").type(innerData).noDefault()
-//                .endRecord();
+        final Schema statusSchema = SchemaBuilder
+                .enumeration("status")
+                .symbols("DONE", "FAIL", "PAUSED");
+        final Schema innerData = SchemaBuilder
+                .record("InnerData")
+                .fields()
+                .requiredString("code")
+                .requiredInt("priority")
+                .endRecord();
+        final Schema publicDataSchema = SchemaBuilder
+                .record("PublicData")
+                .fields()
+                .requiredString("key")
+                .requiredString("data")
+                .endRecord();
+        final Schema listSchema = SchemaBuilder
+                .array().items(publicDataSchema);
+        final Schema testObjectSchema = SchemaBuilder
+                .record("TestObject")
+                .namespace("ru.romanow.serialization.avro")
+                .fields()
+                .requiredString("message")
+                .requiredInt("code")
+                .name("status").type(statusSchema).noDefault()
+                .name("innerData").type(innerData).noDefault()
+                .name("publicData").type(listSchema).noDefault()
+                .endRecord();
 
         logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
 
