@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-public class XmlSerializer {
+public final class XmlSerializer {
     private static final Logger logger = LoggerFactory.getLogger(XmlSerializer.class);
     private static final String XSD_SCHEMA_FILE = "/data/data.xsd";
 

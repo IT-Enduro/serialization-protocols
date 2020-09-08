@@ -5,7 +5,7 @@ import de.undercouch.bson4jackson.BsonFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BsonSerializer {
+public final class BsonSerializer {
     private static final Logger logger = LoggerFactory.getLogger(BsonSerializer.class);
 
     public static byte[] toBson(Object object) {

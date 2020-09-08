@@ -4,37 +4,23 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
-import org.apache.avro.io.*;
-import org.apache.avro.reflect.ReflectData;
-import org.apache.avro.reflect.ReflectDatumReader;
-import org.apache.avro.reflect.ReflectDatumWriter;
-import org.apache.avro.specific.SpecificDatumReader;
-import org.apache.avro.specific.SpecificDatumWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.ClassPathResource;
-import org.w3c.dom.Document;
 import ru.romanow.serialization.avro.AvroInnerData;
 import ru.romanow.serialization.avro.AvroPublicData;
 import ru.romanow.serialization.avro.AvroStatus;
 import ru.romanow.serialization.avro.AvroTestObject;
 import ru.romanow.serialization.generated.ProtobufObjectProto;
 import ru.romanow.serialization.model.*;
-import ru.romanow.serialization.services.BsonSerializer;
-import ru.romanow.serialization.services.JsonSerializer;
-import ru.romanow.serialization.services.MsgpackSerializer;
-import ru.romanow.serialization.services.XmlSerializer;
+import ru.romanow.serialization.services.*;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +29,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.springframework.util.Base64Utils.encodeToString;
+import static ru.romanow.serialization.generated.ProtobufObjectProto.TestObject.parser;
 
 @SuppressWarnings("unused")
 @SpringBootApplication
@@ -68,7 +55,7 @@ public class SerializationApplication
 //        testBson();
 //        testMsgPack();
 //        testProtobuf();
-        testAvroGenerated();
+//        testAvroGenerated();
 //        testAvro();
     }
 
@@ -79,7 +66,7 @@ public class SerializationApplication
 
         logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
 
-        final AvroTestObject avroTestObject = AvroTestObject.newBuilder()
+        AvroTestObject avroTestObject = AvroTestObject.newBuilder()
                 .setCode(nextInt(0, 100))
                 .setMessage(randomAlphanumeric(10))
                 .setStatus(AvroStatus.DONE)
@@ -90,29 +77,11 @@ public class SerializationApplication
                 ))
                 .build();
 
-        byte[] data = new byte[0];
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            final DatumWriter<AvroTestObject> writer = new SpecificDatumWriter<>(avroTestObject.getSchema());
-            final JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
-            writer.write(avroTestObject, jsonEncoder);
-            jsonEncoder.flush();
-            data = stream.toByteArray();
-        } catch (IOException exception) {
-            logger.error("", exception);
-        }
+        final String json = AvroService.toJson(avroTestObject, testObjectSchema);
+        logger.info("Serialized object '{}'", json);
 
-        logger.info("Serialized object '{}'", new String(data));
-
-        AvroTestObject serialized = null;
-        final DatumReader<AvroTestObject> reader = new SpecificDatumReader<>(AvroTestObject.class);
-        try {
-            final JsonDecoder jsonDecoder = DecoderFactory.get().jsonDecoder(AvroTestObject.getClassSchema(), new String(data));
-            serialized = reader.read(null, jsonDecoder);
-        } catch (IOException exception) {
-            logger.error("", exception);
-        }
-
-        logger.info("Deserialized object '{}'", serialized.toString());
+        avroTestObject = AvroService.fromJson(json, testObjectSchema, AvroTestObject.class);
+        logger.info("Deserialized object '{}'", avroTestObject);
 
         logger.info("\n==================== Finish testAvroGenerated ====================");
     }
@@ -151,30 +120,11 @@ public class SerializationApplication
         logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true));
 
         TestObject testObject = createTestObject();
+        final String json = AvroService.toJson(testObject, testObjectSchema);
+        logger.info("Serialized object '{}'", json);
 
-        byte[] data = new byte[0];
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            final DatumWriter<TestObject> writer = new ReflectDatumWriter<>(testObjectSchema);
-            final JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(testObjectSchema, stream);
-            writer.write(testObject, jsonEncoder);
-            jsonEncoder.flush();
-            data = stream.toByteArray();
-        } catch (IOException exception) {
-            logger.error("", exception);
-        }
-
-        logger.info("Serialized object '{}'", new String(data));
-
-        testObject = null;
-        final DatumReader<TestObject> reader = new ReflectDatumReader<>(TestObject.class);
-        try {
-            final JsonDecoder jsonDecoder = DecoderFactory.get().jsonDecoder(testObjectSchema, new String(data));
-            testObject = reader.read(null, jsonDecoder);
-        } catch (IOException exception) {
-            logger.error("", exception);
-        }
-
-        logger.info("Deserialized object '{}'", testObject.toString());
+        testObject = AvroService.fromJson(json, testObjectSchema, TestObject.class);
+        logger.info("Deserialized object '{}'", testObject);
 
         logger.info("\n==================== Finish testAvro ====================");
     }
@@ -190,24 +140,13 @@ public class SerializationApplication
         logger.info("\n==================== Finish testJsonPath ====================");
     }
 
-    @SneakyThrows
     private void testXPath() {
         logger.info("\n==================== Start testXPath ====================");
 
         final String xml = readFromFile(XML_DATA_FILE);
         logger.info("Read XML from file:\n{}", xml);
-
-        try (InputStream stream = new ClassPathResource(XML_DATA_FILE).getInputStream()) {
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder builder = factory.newDocumentBuilder();
-            final Document document = builder.parse(stream);
-            final XPathFactory xPathfactory = XPathFactory.newInstance();
-            final XPath xpath = xPathfactory.newXPath();
-            final XPathExpression expr = xpath.compile(XPATH);
-
-            final Object result = expr.evaluate(document, XPathConstants.STRING);
-            logger.info("XPath '{}' evaluates {}", XPATH, result);
-        }
+        final Object result = XPathService.findByXPath(xml, XPATH);
+        logger.info("XPath '{}' evaluates {}", XPATH, result);
 
         logger.info("\n==================== Finish testXPath ====================");
     }
@@ -226,17 +165,11 @@ public class SerializationApplication
 
         logger.info("Serialize object '{}' to Protobuf", testObject);
 
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            testObject.writeTo(stream);
-            byte[] object = stream.toByteArray();
+        final byte[] serializedData = ProtobufService.serialize(testObject);
+        logger.info("{}", encodeToString(serializedData));
 
-            logger.info("{}", encodeToString(object));
-
-            ProtobufObjectProto.TestObject parsedObject =
-                    ProtobufObjectProto.TestObject.parseFrom(object);
-
-            logger.info("\n{}", parsedObject);
-        }
+        ProtobufObjectProto.TestObject parsedObject = ProtobufService.parseFrom(serializedData, parser());
+        logger.info("\n{}", parsedObject);
 
         logger.info("\n==================== Finish testProtobuf ====================");
     }

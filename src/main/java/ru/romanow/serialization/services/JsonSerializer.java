@@ -3,7 +3,7 @@ package ru.romanow.serialization.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JsonSerializer {
+public final class JsonSerializer {
 
     private static final Gson gson =
             new GsonBuilder()

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 
-public class MsgpackSerializer {
+public final class MsgpackSerializer {
     private static final Logger logger = LoggerFactory.getLogger(MsgpackSerializer.class);
 
     public static byte[] toMsgpack(Object object) {
