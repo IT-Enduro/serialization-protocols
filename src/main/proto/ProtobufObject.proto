@@ -14,6 +14,7 @@ message TestObject {
 message InnerData {
     string code = 1;
     int32 priority = 2;
+
 }
 
 message PublicData {

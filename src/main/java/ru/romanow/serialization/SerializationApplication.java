@@ -47,16 +47,16 @@ public class SerializationApplication
 
     @Override
     public void run(String... args) {
-//        testJson();
-//        testXml();
-//        validateXml();
-//        testXPath();
-//        testJsonPath();
-//        testBson();
-//        testMsgPack();
-//        testProtobuf();
-//        testAvroGenerated();
-//        testAvro();
+        testJson();
+        testXml();
+        validateXml();
+        testXPath();
+        testJsonPath();
+        testBson();
+        testMsgPack();
+        testProtobuf();
+        testAvroGenerated();
+        testAvro();
     }
 
     private void testAvroGenerated() {
@@ -161,6 +161,7 @@ public class SerializationApplication
                 .setCode(nextInt(0, 100))
                 .setMessage(randomAlphabetic(10))
                 .setStatus(ProtobufObjectProto.Status.FAIL)
+                .setInnerData(ProtobufObjectProto.InnerData.newBuilder().setCode("123").setPriority(100).build())
                 .build();
 
         logger.info("Serialize object '{}' to Protobuf", testObject);
