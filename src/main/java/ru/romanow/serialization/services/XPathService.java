@@ -16,12 +16,12 @@ public final class XPathService {
 
     @SneakyThrows
     public static Object findByXPath(String xml, String pathToFind) {
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder builder = factory.newDocumentBuilder();
-            final Document document = builder.parse(new InputSource(new StringReader(xml)));
-            final XPathFactory xPathfactory = XPathFactory.newInstance();
-            final XPath xpath = xPathfactory.newXPath();
-            final XPathExpression expr = xpath.compile(pathToFind);
-            return expr.evaluate(document, XPathConstants.STRING);
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilder builder = factory.newDocumentBuilder();
+        final Document document = builder.parse(new InputSource(new StringReader(xml)));
+        final XPathFactory xPathfactory = XPathFactory.newInstance();
+        final XPath xpath = xPathfactory.newXPath();
+        final XPathExpression expr = xpath.compile(pathToFind);
+        return expr.evaluate(document, XPathConstants.STRING);
     }
 }

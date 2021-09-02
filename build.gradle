@@ -1,13 +1,23 @@
+import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
+
 plugins {
     id "java"
     id "idea"
-    id "org.springframework.boot" version "2.3.0.RELEASE"
-    id "io.spring.dependency-management" version "1.0.9.RELEASE"
-    id "com.commercehub.gradle.plugin.avro-base" version "0.9.1"
-    id "com.google.protobuf" version "0.8.13"
+    id "org.springframework.boot" version "2.5.0"
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.2.1"
+    id "com.google.protobuf" version "0.8.17"
 }
 
-apply from: 'libraries.gradle'
+ext {
+    guavaVersion = "20.0"
+    bsonVersion = "2.9.2"
+    avroVersion = "1.10.1"
+    jacksonMsgpackVersion = "0.8.16"
+    msgpackVersion = "0.9.0"
+    protobufVersion = "3.17.3"
+    lombokVersion = "1.18.20"
+}
 
 sourceCompatibility = 1.11
 targetCompatibility = 1.11
@@ -38,7 +48,7 @@ dependencies {
     implementation "com.jayway.jsonpath:json-path"
     implementation "org.apache.avro:avro:${avroVersion}"
     implementation "de.undercouch:bson4jackson:${bsonVersion}"
-    implementation "org.msgpack:msgpack:${msgpackVersion}"
+    implementation "org.msgpack:msgpack-core:${msgpackVersion}"
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
 
@@ -46,26 +56,27 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
-task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
-    source("src/main/resources/data/schema.avsc")
-    outputDir = file("${project.buildDir}/generated/source/avro")
+task generateAvro(type: GenerateAvroJavaTask) {
+    source("src/main/avro")
+    outputDir = file("${project.buildDir}/generated/sources/avro")
 }
+
+compileJava.dependsOn(generateAvro)
 
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${protobufVersion}"
+        generatedFilesBaseDir = "${project.buildDir}/generated/sources/proto"
     }
 }
 
 sourceSets {
     main {
         java {
-            srcDirs 'src/main/java', "${project.buildDir}/generated/source/proto", "${project.buildDir}/generated/source/avro"
+            srcDirs 'src/main/java', "${project.buildDir}/generated/sources/proto", "${project.buildDir}/generated/sources/avro"
         }
     }
 }
-
-compileJava.dependsOn(generateAvro)
 
 idea {
     module {

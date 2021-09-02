@@ -35,11 +35,11 @@ import static ru.romanow.serialization.generated.ProtobufObjectProto.TestObject.
 @SpringBootApplication
 public class SerializationApplication
         implements CommandLineRunner {
-    private final Logger logger = LoggerFactory.getLogger(SerializationApplication.class);
     private static final String XML_DATA_FILE = "/data/xml-data.xml";
     private static final String JSON_DATA_FILE = "/data/json-data.json";
     private static final String XPATH = "//key[text()='KEY1']";
     private static final String JSON_PATH = "$..[?(@.key == 'KEY1')].key";
+    private final Logger logger = LoggerFactory.getLogger(SerializationApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(SerializationApplication.class, args);

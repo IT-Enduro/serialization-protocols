@@ -6,7 +6,10 @@ import org.springframework.core.io.ClassPathResource;
 import ru.romanow.serialization.model.XmlTestObject;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
