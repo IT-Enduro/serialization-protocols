@@ -1,37 +1,23 @@
-package ru.romanow.serialization.model;
+package ru.romanow.serialization.model
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import java.io.Serializable
+import javax.xml.bind.annotation.*
 
-import javax.xml.bind.annotation.*;
-import java.io.Serializable;
-import java.util.List;
-
-@Data
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlTestObject
-        extends TestObject
-        implements Serializable {
+open class XmlTestObject(
     @XmlElement(name = "message")
-    protected String message;
+    override var message: String? = null,
 
     @XmlElement(name = "code")
-    protected Integer code;
+    override var resultCode: Int? = null,
 
     @XmlElement(name = "status")
-    protected Status status;
+    override var status: Status? = null,
 
     @XmlElement(name = "innerData")
-    protected InnerData innerData;
+    override var innerData: InnerData? = null,
 
     @XmlElementWrapper(name = "publicDataList")
-    protected List<PublicData> publicData;
-}
+    override var publicData: List<PublicData>? = null
+) : TestObject(), Serializable

@@ -1,4 +1,4 @@
-{
+§{
   "type" : "record",
   "name" : "AvroTestObject",
   "namespace" : "ru.romanow.serialization.avro",
@@ -6,7 +6,7 @@
     "name" : "message",
     "type" : "string"
   }, {
-    "name" : "code",
+    "name" : "resultCode",
     "type" : "int"
   }, {
     "name" : "status",

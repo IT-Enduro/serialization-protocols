@@ -1,5 +1,5 @@
-package ru.romanow.serialization.model;
+package ru.romanow.serialization.model
 
-public enum Status {
+enum class Status {
     DONE, FAIL, PAUSED
 }

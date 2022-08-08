@@ -1,30 +1,26 @@
-package ru.romanow.serialization.services;
+package ru.romanow.serialization.services
 
-import lombok.SneakyThrows;
-import org.apache.avro.Schema;
-import org.apache.avro.io.*;
-import org.apache.avro.reflect.ReflectDatumReader;
-import org.apache.avro.reflect.ReflectDatumWriter;
+import org.apache.avro.Schema
+import org.apache.avro.io.DatumReader
+import org.apache.avro.io.DatumWriter
+import org.apache.avro.io.DecoderFactory
+import org.apache.avro.io.EncoderFactory
+import org.apache.avro.reflect.ReflectDatumReader
+import org.apache.avro.reflect.ReflectDatumWriter
+import java.io.ByteArrayOutputStream
 
-import java.io.ByteArrayOutputStream;
-
-public final class AvroService {
-
-    @SneakyThrows
-    public static String toJson(Object object, Schema schema) {
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            final DatumWriter<Object> writer = new ReflectDatumWriter<>(schema);
-            final JsonEncoder jsonEncoder = EncoderFactory.get().jsonEncoder(schema, stream);
-            writer.write(object, jsonEncoder);
-            jsonEncoder.flush();
-            return new String(stream.toByteArray());
-        }
+fun avroToJson(data: Any, schema: Schema): String {
+    ByteArrayOutputStream().use { stream ->
+        val writer: DatumWriter<Any> = ReflectDatumWriter(schema)
+        val jsonEncoder = EncoderFactory.get().jsonEncoder(schema, stream)
+        writer.write(data, jsonEncoder)
+        jsonEncoder.flush()
+        return String(stream.toByteArray())
     }
+}
 
-    @SneakyThrows
-    public static <T> T fromJson(String json, Schema schema, Class<T> cls) {
-        final DatumReader<T> reader = new ReflectDatumReader<>(cls);
-        final JsonDecoder jsonDecoder = DecoderFactory.get().jsonDecoder(schema, json);
-        return reader.read(null, jsonDecoder);
-    }
+fun <T> avroFromJson(json: String, schema: Schema, cls: Class<T>): T {
+    val reader: DatumReader<T?> = ReflectDatumReader(cls)
+    val jsonDecoder = DecoderFactory.get().jsonDecoder(schema, json)
+    return reader.read(null, jsonDecoder)!!
 }

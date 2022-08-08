@@ -1,20 +1,9 @@
-package ru.romanow.serialization.model;
+package ru.romanow.serialization.model
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-import java.util.List;
-
-@Data
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
-public class TestObject {
-    protected String message;
-    protected Integer code;
-    protected Status status;
-    protected InnerData innerData;
-    protected List<PublicData> publicData;
-}
+open class TestObject(
+    open var message: String? = null,
+    open var resultCode: Int? = null,
+    open var status: Status? = null,
+    open var innerData: InnerData? = null,
+    open var publicData: List<PublicData>? = null
+)

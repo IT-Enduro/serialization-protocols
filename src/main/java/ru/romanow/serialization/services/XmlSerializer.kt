@@ -1,76 +1,48 @@
-package ru.romanow.serialization.services;
+package ru.romanow.serialization.services
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import ru.romanow.serialization.model.XmlTestObject;
+import ru.romanow.serialization.model.XmlTestObject
+import java.io.StringReader
+import java.io.StringWriter
+import javax.xml.XMLConstants
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.Marshaller
+import javax.xml.bind.UnmarshalException
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
+private const val XSD_SCHEMA_FILE = "/data/data.xsd"
 
-public final class XmlSerializer {
-    private static final Logger logger = LoggerFactory.getLogger(XmlSerializer.class);
-    private static final String XSD_SCHEMA_FILE = "/data/data.xsd";
+fun toXml(data: Any): String {
+    val context = JAXBContext.newInstance(XmlTestObject::class.java)
+    val marshaller = context.createMarshaller()
+    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+    val writer = StringWriter()
+    marshaller.marshal(data, writer)
+    return writer.toString()
+}
 
-    public static String toXml(Object object) {
-        String result = null;
-        try {
-            JAXBContext context = JAXBContext.newInstance(XmlTestObject.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+fun <T> fromXml(xml: String): T {
+    val context = JAXBContext.newInstance(XmlTestObject::class.java)
+    val unmarshaller = context.createUnmarshaller()
+    val reader = StringReader(xml)
+    return unmarshaller.unmarshal(reader) as T
+}
 
-            StringWriter writer = new StringWriter();
-            marshaller.marshal(object, writer);
-            result = writer.toString();
-        } catch (JAXBException exception) {
-            logger.error("", exception);
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T fromXml(String xml) {
-        T result = null;
-        try {
-            JAXBContext context = JAXBContext.newInstance(XmlTestObject.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-
-            StringReader reader = new StringReader(xml);
-            result = (T) unmarshaller.unmarshal(reader);
-        } catch (JAXBException exception) {
-            logger.error("", exception);
-        }
-
-        return result;
-    }
-
-    public static boolean validate(String xml) {
-        boolean valid = true;
-        try {
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            try (InputStream stream = new ClassPathResource(XSD_SCHEMA_FILE).getInputStream()) {
-                Schema schema = schemaFactory.newSchema(new StreamSource(stream));
-                JAXBContext context = JAXBContext.newInstance(XmlTestObject.class);
-                Unmarshaller unmarshaller = context.createUnmarshaller();
-                unmarshaller.setSchema(schema);
-
-                StringReader reader = new StringReader(xml);
-                unmarshaller.unmarshal(reader);
+fun validate(xml: String): Boolean {
+    var valid = true
+    try {
+        val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+        object {}.javaClass.getResource(XSD_SCHEMA_FILE)!!.openStream()
+            .use { stream ->
+                val schema = schemaFactory.newSchema(StreamSource(stream))
+                val context = JAXBContext.newInstance(XmlTestObject::class.java)
+                val unmarshaller = context.createUnmarshaller()
+                unmarshaller.schema = schema
+                val reader = StringReader(xml)
+                unmarshaller.unmarshal(reader)
             }
-        } catch (Exception exception) {
-            logger.error("", exception);
-            valid = false;
-        }
-
-        return valid;
+    } catch (exception: UnmarshalException) {
+        valid = false
     }
+    return valid
 }

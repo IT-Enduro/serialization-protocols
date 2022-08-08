@@ -1,24 +1,17 @@
-package ru.romanow.serialization.services;
+package ru.romanow.serialization.services
 
-import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.MessageLite;
-import com.google.protobuf.Parser;
-import lombok.SneakyThrows;
+import com.google.protobuf.GeneratedMessageV3
+import com.google.protobuf.MessageLite
+import com.google.protobuf.Parser
+import java.io.ByteArrayOutputStream
 
-import java.io.ByteArrayOutputStream;
-
-public final class ProtobufService {
-
-    @SneakyThrows
-    public static <T extends MessageLite> byte[] serialize(T object) {
-        try (final ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            object.writeTo(stream);
-            return stream.toByteArray();
-        }
+fun <T : MessageLite> serialize(data: T): ByteArray {
+    ByteArrayOutputStream().use { stream ->
+        data.writeTo(stream)
+        return stream.toByteArray()
     }
+}
 
-    @SneakyThrows
-    public static <T extends GeneratedMessageV3> T parseFrom(byte[] serializedData, Parser<T> parser) {
-        return parser.parseFrom(serializedData);
-    }
+fun <T : GeneratedMessageV3> parseFrom(serializedData: ByteArray, parser: Parser<T>): T {
+    return parser.parseFrom(serializedData)
 }

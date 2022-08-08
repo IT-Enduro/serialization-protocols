@@ -1,20 +1,20 @@
 import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
 
 plugins {
-    id "java"
     id "idea"
-    id "org.springframework.boot" version "2.5.0"
+    id "org.jetbrains.kotlin.jvm" version "1.7.10"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id "com.github.davidmc24.gradle.plugin.avro-base" version "1.2.1"
-    id "com.google.protobuf" version "0.8.17"
+    id "com.google.protobuf" version "0.8.19"
 }
 
 ext {
+    springBootVersion = "2.7.0"
     guavaVersion = "20.0"
     bsonVersion = "2.9.2"
-    avroVersion = "1.10.1"
+    avroVersion = "1.11.1"
     jacksonMsgpackVersion = "0.8.16"
-    msgpackVersion = "0.9.0"
+    msgpackVersion = "0.9.3"
     protobufVersion = "3.17.3"
     lombokVersion = "1.18.20"
 }
@@ -29,13 +29,20 @@ idea {
     }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+    }
+}
+
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.slf4j:slf4j-api"
+    implementation "ch.qos.logback:logback-classic"
 
     implementation "com.google.code.gson:gson"
     implementation "com.google.guava:guava:${guavaVersion}"
@@ -52,8 +59,9 @@ dependencies {
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
 
-    implementation "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 }
 
 task generateAvro(type: GenerateAvroJavaTask) {
@@ -61,7 +69,7 @@ task generateAvro(type: GenerateAvroJavaTask) {
     outputDir = file("${project.buildDir}/generated/sources/avro")
 }
 
-compileJava.dependsOn(generateAvro)
+compileKotlin.dependsOn(generateAvro)
 
 protobuf {
     protoc {
@@ -84,5 +92,15 @@ idea {
                 file("${project.buildDir}/generated/source/avro"),
                 file("${project.buildDir}/generated/source/proto")
         ]
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
