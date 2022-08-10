@@ -21,6 +21,7 @@ fun toXml(data: Any): String {
     return writer.toString()
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T> fromXml(xml: String): T {
     val context = JAXBContext.newInstance(XmlTestObject::class.java)
     val unmarshaller = context.createUnmarshaller()

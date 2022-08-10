@@ -23,16 +23,16 @@ private const val XPATH = "//key[text()='KEY1']"
 private const val JSON_PATH = "$..[?(@.key == 'KEY1')].key"
 
 fun main() {
-//    testJson()
-//    testXml()
-//    validateXml()
-//    testXPath()
-//    testJsonPath()
-//    testBson()
-//    testMsgPack()
-//    testProtobuf()
-//    testAvroGenerated()
-    testAvro()
+    testJson()
+    testXml()
+    validateXml()
+    testXPath()
+    testJsonPath()
+    testBson()
+    testMsgPack()
+    testProtobuf()
+    testAvroGenerated()
+//    testAvro()
 }
 
 private fun testAvroGenerated() {
