@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlElement
 @XmlAccessorType(XmlAccessType.FIELD)
 data class PublicData(
     @XmlElement(name = "key")
-    private val key: String? = null,
+    var key: String? = null,
 
     @XmlElement(name = "data")
-    private val data: String? = null
+    var data: String? = null
 )

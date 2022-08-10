@@ -10,7 +10,7 @@ open class XmlTestObject(
     override var message: String? = null,
 
     @XmlElement(name = "code")
-    override var resultCode: Int? = null,
+    override var code: Int? = null,
 
     @XmlElement(name = "status")
     override var status: Status? = null,

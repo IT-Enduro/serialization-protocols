@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xmlTestObject>
-    <resultCode>200</resultCode>
+    <code>200</code>
     <message>Hello, world</message>
     <status>DONE</status>
     <innerData priority="14">NEW ITEM DATA</innerData>

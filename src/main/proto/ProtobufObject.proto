@@ -5,7 +5,7 @@ option java_outer_classname = "ProtobufObjectProto";
 
 message TestObject {
     string message = 1;
-    int32 resultCode = 2;
+    int32 code = 2;
     Status status = 3;
     InnerData innerData = 4;
     repeated PublicData publicData = 5;

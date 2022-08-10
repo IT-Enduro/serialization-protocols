@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlValue
 @XmlAccessorType(XmlAccessType.FIELD)
 data class InnerData(
     @XmlValue
-    private val code: String? = null,
+    var code: String? = null,
 
     @XmlAttribute(name = "priority")
-    private val priority: Int? = null
+    var priority: Int? = null
 )

@@ -9,7 +9,7 @@ data class NewTestObject(val version: String) : TestObject(), Serializable {
         return MoreObjects.toStringHelper(this)
             .add("version", version)
             .add("message", message)
-            .add("resultCode", resultCode)
+            .add("code", code)
             .add("status", status)
             .add("innerData", innerData)
             .add("publicData", publicData)

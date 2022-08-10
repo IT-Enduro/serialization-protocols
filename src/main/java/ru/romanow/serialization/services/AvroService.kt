@@ -1,6 +1,7 @@
 package ru.romanow.serialization.services
 
 import org.apache.avro.Schema
+import org.apache.avro.generic.GenericDatumReader
 import org.apache.avro.io.DatumReader
 import org.apache.avro.io.DatumWriter
 import org.apache.avro.io.DecoderFactory
@@ -21,6 +22,12 @@ fun avroToJson(data: Any, schema: Schema): String {
 
 fun <T> avroFromJson(json: String, schema: Schema, cls: Class<T>): T {
     val reader: DatumReader<T?> = ReflectDatumReader(cls)
+    val jsonDecoder = DecoderFactory.get().jsonDecoder(schema, json)
+    return reader.read(null, jsonDecoder)!!
+}
+
+fun <T> avroFromJson(json: String, schema: Schema): T {
+    val reader: DatumReader<T?> = GenericDatumReader(schema)
     val jsonDecoder = DecoderFactory.get().jsonDecoder(schema, json)
     return reader.read(null, jsonDecoder)!!
 }

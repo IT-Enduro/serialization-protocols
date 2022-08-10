@@ -2,6 +2,8 @@ package ru.romanow.serialization
 
 import com.jayway.jsonpath.JsonPath
 import org.apache.avro.SchemaBuilder
+import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.GenericRecordBuilder
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import org.apache.commons.lang3.RandomUtils.nextInt
@@ -14,6 +16,7 @@ import ru.romanow.serialization.generated.ProtobufObjectProto
 import ru.romanow.serialization.model.*
 import ru.romanow.serialization.services.*
 import java.util.*
+
 
 private val logger = LoggerFactory.getLogger("main")
 
@@ -32,7 +35,7 @@ fun main() {
     testMsgPack()
     testProtobuf()
     testAvroGenerated()
-//    testAvro()
+    testAvro()
 }
 
 private fun testAvroGenerated() {
@@ -40,7 +43,7 @@ private fun testAvroGenerated() {
     val testObjectSchema = AvroTestObject.getClassSchema()
     logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true))
     var avroTestObject = AvroTestObject.newBuilder()
-        .setResultCode(nextInt(0, 100))
+        .setCode(nextInt(0, 100))
         .setMessage(randomAlphanumeric(10))
         .setStatus(AvroStatus.DONE)
         .setInnerData(
@@ -67,43 +70,51 @@ private fun testAvroGenerated() {
 private fun testAvro() {
     logger.info("\n==================== Start testAvro ====================")
     val statusSchema = SchemaBuilder
-        .enumeration("AvroStatus")
-        .namespace("ru.romanow.serialization.avro")
-        .symbols("DONE", "FAIL", "PAUSED")
-    val innerData = SchemaBuilder
-        .record("AvroInnerData")
-        .namespace("ru.romanow.serialization.avro")
+        .enumeration("status")
+        .symbols("DONE", "FAIL", "PAUSED");
+    val innerDataStatus = SchemaBuilder
+        .record("InnerData")
         .fields()
         .requiredString("code")
         .requiredInt("priority")
-        .endRecord()
+        .endRecord();
     val publicDataSchema = SchemaBuilder
-        .record("AvroPublicData")
-        .namespace("ru.romanow.serialization.avro")
+        .record("PublicData")
         .fields()
         .requiredString("key")
         .requiredString("data")
-        .endRecord()
+        .endRecord();
     val listSchema = SchemaBuilder
-        .array()
-        .prop("java-class", "java.util.List")
-        .items(publicDataSchema)
+        .array().items(publicDataSchema);
     val testObjectSchema = SchemaBuilder
-        .record("AvroTestObject")
+        .record("TestObject")
         .namespace("ru.romanow.serialization.avro")
         .fields()
         .requiredString("message")
-        .requiredInt("resultCode")
+        .requiredInt("code")
         .name("status").type(statusSchema).noDefault()
-        .name("innerData").type(innerData).noDefault()
+        .name("innerData").type(innerDataStatus).noDefault()
         .name("publicData").type(listSchema).noDefault()
         .endRecord()
 
+    val obj = createTestObject()
+    var testObject = GenericRecordBuilder(testObjectSchema)
+        .set("message", obj.message)
+        .set("code", obj.code)
+        .set("status", obj.status)
+        .set(
+            "innerData", GenericRecordBuilder(innerDataStatus)
+                .set("code", obj.innerData?.code)
+                .set("priority", obj.innerData?.priority)
+                .build()
+        )
+        .set("publicData", GenericData.Array(listSchema, obj.publicData))
+        .build()
+
     logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true))
-    var testObject = createTestObject()
     val json: String = avroToJson(testObject, testObjectSchema)
     logger.info("Serialized object '{}'", json)
-    testObject = avroFromJson(json, testObjectSchema, TestObject::class.java)
+    testObject = avroFromJson(json, testObjectSchema)
     logger.info("Deserialized object '{}'", testObject)
     logger.info("\n==================== Finish testAvro ====================")
 }
@@ -130,7 +141,7 @@ private fun testProtobuf() {
     logger.info("\n==================== Start testProtobuf ====================")
     val testObject = ProtobufObjectProto.TestObject
         .newBuilder()
-        .setResultCode(nextInt(0, 100))
+        .setCode(nextInt(0, 100))
         .setMessage(RandomStringUtils.randomAlphabetic(10))
         .setStatus(ProtobufObjectProto.Status.FAIL)
         .setInnerData(ProtobufObjectProto.InnerData.newBuilder().setCode("123").setPriority(100).build())
@@ -203,7 +214,7 @@ private fun readFromFile(fileName: String): String =
 private fun createTestObject() =
     TestObject(
         message = randomAlphanumeric(10),
-        resultCode = nextInt(0, 100),
+        code = nextInt(0, 100),
         status = Status.DONE,
         innerData = buildInnerData(),
         publicData = listOf(buildPublicData(), buildPublicData())
@@ -212,7 +223,7 @@ private fun createTestObject() =
 private fun createXmlTestObject() =
     XmlTestObject(
         message = randomAlphanumeric(10),
-        resultCode = nextInt(0, 100),
+        code = nextInt(0, 100),
         status = Status.DONE,
         innerData = buildInnerData(),
         publicData = listOf(buildPublicData(), buildPublicData())
