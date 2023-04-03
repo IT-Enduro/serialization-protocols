@@ -3,26 +3,21 @@ import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
 plugins {
     id "idea"
     id "org.jetbrains.kotlin.jvm" version "1.7.10"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
-    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.2.1"
-    id "com.google.protobuf" version "0.8.19"
+    id "io.spring.dependency-management" version "1.1.0"
+    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.6.0"
+    id "com.google.protobuf" version "0.9.2"
 }
 
 ext {
-    springBootVersion = "2.7.0"
-    guavaVersion = "20.0"
-    bsonVersion = "2.9.2"
+    springBootVersion = "3.0.5"
     avroVersion = "1.11.1"
-    jacksonMsgpackVersion = "0.8.16"
-    msgpackVersion = "0.9.3"
-    protobufVersion = "3.17.3"
+    jacksonYamlVersion = "2.14.2"
+    jacksonJsonVersion = "2.14.2"
+    protobufVersion = "3.22.2"
     lombokVersion = "1.18.20"
 }
 
-sourceCompatibility = 1.11
-targetCompatibility = 1.11
-
-[ compileKotlin, compileTestKotlin ]*.kotlinOptions*.jvmTarget = "11"
+[ compileKotlin, compileTestKotlin ]*.kotlinOptions*.jvmTarget = "17"
 
 idea {
     module {
@@ -46,20 +41,16 @@ dependencies {
     implementation "org.slf4j:slf4j-api"
     implementation "ch.qos.logback:logback-classic"
 
-    implementation "com.google.code.gson:gson"
-    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "com.sun.xml.bind:jaxb-impl"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api"
     implementation "org.apache.commons:commons-lang3"
 
-    implementation "javax.xml.bind:jaxb-api"
-    implementation "org.glassfish.jaxb:jaxb-runtime"
-    implementation "com.fasterxml.jackson.core:jackson-core"
-    implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.jayway.jsonpath:json-path"
-    implementation "org.apache.avro:avro:${avroVersion}"
-    implementation "de.undercouch:bson4jackson:${bsonVersion}"
-    implementation "org.msgpack:msgpack-core:${msgpackVersion}"
-    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
-    implementation "org.msgpack:jackson-dataformat-msgpack:${jacksonMsgpackVersion}"
+    implementation "org.apache.avro:avro:$avroVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
+    implementation "com.google.protobuf:protobuf-java:$protobufVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
@@ -68,7 +59,7 @@ dependencies {
 
 task generateAvro(type: GenerateAvroJavaTask) {
     source("src/main/avro")
-    outputDir = file("${project.buildDir}/generated/sources/avro")
+    outputDir = file("${project.buildDir}/generated/source/avro")
 }
 
 compileKotlin.dependsOn(generateAvro)
@@ -76,14 +67,14 @@ compileKotlin.dependsOn(generateAvro)
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:${protobufVersion}"
-        generatedFilesBaseDir = "${project.buildDir}/generated/sources/proto"
+        generatedFilesBaseDir( "${project.buildDir}/generated/source/proto")
     }
 }
 
 sourceSets {
     main {
         java {
-            srcDirs 'src/main/java', "${project.buildDir}/generated/sources/proto", "${project.buildDir}/generated/sources/avro"
+            srcDirs "src/main/java", "${project.buildDir}/generated/source/proto", "${project.buildDir}/generated/source/avro"
         }
     }
 }

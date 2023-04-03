@@ -1,6 +1,5 @@
 package ru.romanow.serialization
 
-import com.jayway.jsonpath.JsonPath
 import org.apache.avro.SchemaBuilder
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecordBuilder
@@ -26,16 +25,43 @@ private const val XPATH = "//key[text()='KEY1']"
 private const val JSON_PATH = "$..[?(@.key == 'KEY1')].key"
 
 fun main() {
+    // JSON
     testJson()
+    testJsonPath()
+    // XML
     testXml()
     validateXml()
     testXPath()
-    testJsonPath()
-    testBson()
-    testMsgPack()
+    // YAML
+    testYaml()
+    testYamlFile()
+    // Google Protobuf
     testProtobuf()
+    // AVRO
     testAvroGenerated()
     testAvro()
+}
+
+fun testYaml() {
+    logger.info("\n==================== Start testYaml ====================")
+    val testObject = createTestObject()
+    logger.info("Serialize object '{}' to YAML", testObject)
+    val yaml = toYaml(testObject)
+    logger.info("\n{}", yaml)
+    val newObject = fromYaml(yaml, TestObject::class.java)
+    logger.info("{}", newObject)
+    logger.info("\n==================== Finish testYaml ====================")
+}
+
+fun testYamlFile() {
+    logger.info("\n================== Start testYamlFile ==================")
+
+    val yaml = readFromFile("/data/yaml-data.yml")
+    logger.info("Read YAML from file {}", yaml)
+    val testObject = fromFile(yaml, TestObject::class.java)
+
+    logger.info("\n{}", testObject)
+    logger.info("\n================== Finish testYamlFile ==================")
 }
 
 private fun testAvroGenerated() {
@@ -60,7 +86,7 @@ private fun testAvroGenerated() {
             )
         )
         .build()
-    val json: String = avroToJson(avroTestObject, testObjectSchema)
+    val json = avroToJson(avroTestObject, testObjectSchema)
     logger.info("Serialized object '{}'", json)
     avroTestObject = avroFromJson(json, testObjectSchema, AvroTestObject::class.java)
     logger.info("Deserialized object '{}'", avroTestObject)
@@ -112,7 +138,7 @@ private fun testAvro() {
         .build()
 
     logger.info("Generated scheme:\n'{}'", testObjectSchema.toString(true))
-    val json: String = avroToJson(testObject, testObjectSchema)
+    val json = avroToJson(testObject, testObjectSchema)
     logger.info("Serialized object '{}'", json)
     testObject = avroFromJson(json, testObjectSchema)
     logger.info("Deserialized object '{}'", testObject)
@@ -123,7 +149,7 @@ private fun testJsonPath() {
     logger.info("\n==================== Start testJsonPath ====================")
     val json = readFromFile(JSON_DATA_FILE)
     logger.info("Read JSON from file:\n{}", json)
-    val result = JsonPath.read<List<String>>(json, JSON_PATH)
+    val result = jsonPath(json, JSON_PATH)
     logger.info("JsonPath '{}' evaluates {}", JSON_PATH, result)
     logger.info("\n==================== Finish testJsonPath ====================")
 }
@@ -132,7 +158,7 @@ private fun testXPath() {
     logger.info("\n==================== Start testXPath ====================")
     val xml = readFromFile(XML_DATA_FILE)
     logger.info("Read XML from file:\n{}", xml)
-    val result = findByXPath(xml, XPATH)
+    val result = xpath(xml, XPATH)
     logger.info("XPath '{}' evaluates {}", XPATH, result)
     logger.info("\n==================== Finish testXPath ====================")
 }
@@ -167,11 +193,11 @@ private fun testJson() {
 
 private fun testXml() {
     logger.info("\n==================== Start testXml ====================")
-    val testObject: TestObject = createXmlTestObject()
+    val testObject = createXmlTestObject()
     logger.info("Serialize object '{}' to XML", testObject)
-    val xml: String = toXml(testObject)
+    val xml = toXml(testObject)
     logger.info("\n{}", xml)
-    val newObject: XmlTestObject = fromXml(xml)!!
+    val newObject = fromXml(xml, XmlTestObject::class.java)
     logger.info("{}", newObject)
     logger.info("\n==================== Finish testXml ====================")
 }
@@ -184,28 +210,6 @@ private fun validateXml() {
     logger.info("Read XML from file:\n{}", xml)
     logger.info("XML valid: {}", validate(xml))
     logger.info("\n==================== Finish validateXml ====================")
-}
-
-private fun testBson() {
-    logger.info("\n==================== Start testBson ====================")
-    val testObject = createTestObject()
-    logger.info("Serialize object '{}' to BSON", testObject)
-    val bson = toBson(testObject)
-    logger.info("\n{}", Base64.getEncoder().encodeToString(bson))
-    val newObject = fromBson(bson, TestObject::class.java)
-    logger.info("{}", newObject)
-    logger.info("\n==================== Finish testBson ====================")
-}
-
-private fun testMsgPack() {
-    logger.info("\n==================== Start testMsgPack ====================")
-    val testObject = createTestObject()
-    logger.info("Serialize object '{}' to MsgPack", testObject)
-    val bson = toMsgpack(testObject)
-    logger.info("\n{}", Base64.getEncoder().encodeToString(bson))
-    val newObject = fromMsgpack(bson, TestObject::class.java)
-    logger.info("{}", newObject)
-    logger.info("\n==================== Finish testMsgPack ====================")
 }
 
 private fun readFromFile(fileName: String): String =

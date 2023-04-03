@@ -1,0 +1,13 @@
+---
+message: "Hello, world"
+code: 200
+status: "DONE"
+innerData:
+  code: "E100"
+  priority: 10
+publicData:
+  - &key
+    key: "KEY1"
+    data: "NEW-ITEM-1"
+  - <<: *key
+    data: "NEW-ITEM-2"

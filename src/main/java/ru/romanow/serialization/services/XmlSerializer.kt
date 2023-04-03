@@ -1,39 +1,45 @@
 package ru.romanow.serialization.services
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import jakarta.xml.bind.JAXBContext
+import org.xml.sax.InputSource
 import ru.romanow.serialization.model.XmlTestObject
 import java.io.StringReader
-import java.io.StringWriter
+import java.rmi.UnmarshalException
 import javax.xml.XMLConstants
-import javax.xml.bind.JAXBContext
-import javax.xml.bind.Marshaller
-import javax.xml.bind.UnmarshalException
+import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
+import javax.xml.xpath.XPathConstants
+import javax.xml.xpath.XPathFactory
 
 private const val XSD_SCHEMA_FILE = "/data/data.xsd"
 
-fun toXml(data: Any): String {
-    val context = JAXBContext.newInstance(XmlTestObject::class.java)
-    val marshaller = context.createMarshaller()
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
-    val writer = StringWriter()
-    marshaller.marshal(data, writer)
-    return writer.toString()
-}
+private val mapper = XmlMapper()
 
-@Suppress("UNCHECKED_CAST")
-fun <T> fromXml(xml: String): T {
-    val context = JAXBContext.newInstance(XmlTestObject::class.java)
-    val unmarshaller = context.createUnmarshaller()
-    val reader = StringReader(xml)
-    return unmarshaller.unmarshal(reader) as T
+fun toXml(data: Any): String = mapper
+    .writerWithDefaultPrettyPrinter()
+    .writeValueAsString(data)
+
+fun <T> fromXml(xml: String, cls: Class<T>): T =
+    mapper.readValue(xml, cls)
+
+fun xpath(xml: String, path: String): String {
+    val factory = DocumentBuilderFactory.newInstance()
+    val builder = factory.newDocumentBuilder()
+    val document = builder.parse(InputSource(StringReader(xml)))
+    val xPathFactory = XPathFactory.newInstance()
+    val xpath = xPathFactory.newXPath()
+    val expr = xpath.compile(path)
+    return expr.evaluate(document, XPathConstants.STRING) as String
 }
 
 fun validate(xml: String): Boolean {
     var valid = true
     try {
         val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-        object {}.javaClass.getResource(XSD_SCHEMA_FILE)!!.openStream()
+        object {}.javaClass.getResource(XSD_SCHEMA_FILE)!!
+            .openStream()
             .use { stream ->
                 val schema = schemaFactory.newSchema(StreamSource(stream))
                 val context = JAXBContext.newInstance(XmlTestObject::class.java)

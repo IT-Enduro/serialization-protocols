@@ -3,7 +3,7 @@
     <code>200</code>
     <message>Hello, world</message>
     <status>DONE</status>
-    <innerData priority="14">NEW ITEM DATA</innerData>
+    <innerData priority="14"/>
     <publicDataList>
         <publicData>
             <key>KEY1</key>
