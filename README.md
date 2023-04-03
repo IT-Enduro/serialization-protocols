@@ -24,7 +24,10 @@
 ## Сборка и запуск
 
 ```shell
-./gradlew clean build bootRun
+$ ./gradlew clean build
+
+# запуск через `java -jar ...` потому что используется Spring Shell 
+$ java -jar build/libs/serialization-protocols.jar
 ```
 
 ## Ссылки

@@ -3,13 +3,17 @@ import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
 plugins {
     id "idea"
     id "org.jetbrains.kotlin.jvm" version "1.7.10"
+    id "org.jetbrains.kotlin.plugin.spring" version "1.7.10"
+    id "org.springframework.boot" version "3.0.4"
     id "io.spring.dependency-management" version "1.1.0"
     id "com.github.davidmc24.gradle.plugin.avro-base" version "1.6.0"
     id "com.google.protobuf" version "0.9.2"
 }
 
 ext {
-    springBootVersion = "3.0.5"
+    springBootVersion = "3.0.4"
+    springBootShellVersion = "3.0.1"
+
     avroVersion = "1.11.1"
     jacksonYamlVersion = "2.14.2"
     jacksonJsonVersion = "2.14.2"
@@ -29,8 +33,10 @@ idea {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+        mavenBom "org.springframework.shell:spring-shell-dependencies:$springBootShellVersion"
     }
 }
+
 
 
 repositories {
@@ -38,8 +44,9 @@ repositories {
 }
 
 dependencies {
-    implementation "org.slf4j:slf4j-api"
-    implementation "ch.qos.logback:logback-classic"
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.shell:spring-shell-starter"
+    implementation "org.springframework.boot:spring-boot-starter-logging"
 
     implementation "com.sun.xml.bind:jaxb-impl"
     implementation "jakarta.xml.bind:jakarta.xml.bind-api"
@@ -55,6 +62,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine"
 }
 
 task generateAvro(type: GenerateAvroJavaTask) {
@@ -86,4 +96,15 @@ idea {
                 file("${project.buildDir}/generated/source/proto")
         ]
     }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
+bootJar {
+    archiveFileName = "${project.name}.jar"
 }
