@@ -1,14 +1,12 @@
 # Протоколы сериализации
 
+[![Build project](https://github.com/Romanow/serialization-protocols/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Romanow/serialization-protocols/actions/workflows/build.yml)
+
 ## Символьные
 
 1. [Json](src/main/java/ru/romanow/serialization/services/JsonSerializer.kt)
 2. [XML](src/main/java/ru/romanow/serialization/services/XmlSerializer.kt)
 3. [YAML](src/main/java/ru/romanow/serialization/services/YamlSerializer.kt)
-
-### TODO
-
-1. CSV
 
 ## Бинарные
 
