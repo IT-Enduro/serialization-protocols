@@ -10,14 +10,14 @@
 
 ## Бинарные
 
-1. [Avro](src/main/java/ru/romanow/serialization/services/AvroService.kt)
-2. [Protobuf](src/main/java/ru/romanow/serialization/services/ProtobufService.kt)
+1. [Avro](src/main/java/ru/romanow/serialization/services/AvroSerializer.kt)
+2. [Protobuf](src/main/java/ru/romanow/serialization/services/ProtobufSerializer.kt)
 
 ## Утилиты
 
-1. [XPath](src/main/java/ru/romanow/serialization/services/XPathService.kt)
-2. XSD schema validation
-3. JsonPath
+1. [XPath](src/main/java/ru/romanow/serialization/services/XmlSerializer.kt)
+2. [XSD schema validation](src/main/java/ru/romanow/serialization/services/XmlSerializer.kt)
+3. [JsonPath](src/main/java/ru/romanow/serialization/services/JsonSerializer.kt)
 
 ## Сборка и запуск
 
