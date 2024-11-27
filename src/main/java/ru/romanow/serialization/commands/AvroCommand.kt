@@ -1,10 +1,10 @@
 package ru.romanow.serialization.commands
 
 import org.apache.avro.SchemaBuilder
+import org.apache.avro.SchemaFormatter
 import org.apache.avro.generic.GenericData
 import org.apache.avro.generic.GenericRecordBuilder
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.commons.lang3.RandomUtils
 import org.slf4j.LoggerFactory
 import org.springframework.shell.standard.ShellCommandGroup
 import org.springframework.shell.standard.ShellComponent
@@ -16,6 +16,7 @@ import ru.romanow.serialization.avro.AvroTestObject
 import ru.romanow.serialization.model.createTestObject
 import ru.romanow.serialization.services.avroFromJson
 import ru.romanow.serialization.services.avroToJson
+import kotlin.random.Random
 
 @ShellComponent
 @ShellCommandGroup("AVRO")
@@ -25,16 +26,16 @@ class AvroCommand {
     @ShellMethod(key = ["generated"], value = "Serialization and deserialization to JSON using AVRO generated schema")
     fun generated() {
         val testObjectSchema = AvroTestObject.getClassSchema()
-        logger.info("Generated scheme:\n{}", testObjectSchema.toString(true))
+        logger.info("Generated scheme:\n{}", SchemaFormatter.getInstance("json/pretty").format(testObjectSchema))
 
         var testObject = AvroTestObject.newBuilder()
-            .setCode(RandomUtils.nextInt(0, 100))
+            .setCode(Random.nextInt(0, 100))
             .setMessage(RandomStringUtils.randomAlphanumeric(10))
             .setStatus(AvroStatus.DONE)
             .setInnerData(
                 AvroInnerData.newBuilder()
                     .setCode(RandomStringUtils.randomAlphanumeric(15))
-                    .setPriority(RandomUtils.nextInt(10, 15)).build()
+                    .setPriority(Random.nextInt(10, 15)).build()
             )
             .setPublicData(
                 listOf(
@@ -47,31 +48,31 @@ class AvroCommand {
             .build()
 
         val json = avroToJson(testObject, testObjectSchema)
-        logger.info("Serialized object '{}' to JSON", json)
+        logger.info("Serialized object '$json' to JSON")
 
         testObject = avroFromJson(json, testObjectSchema, AvroTestObject::class.java)
-        logger.info("Deserialized object '{}'", testObject)
+        logger.info("Deserialized object '$testObject'")
     }
 
     @ShellMethod(key = ["manual"], value = "Serialization and deserialization to JSON using AVRO manual schema")
     fun manual() {
         val statusSchema = SchemaBuilder
             .enumeration("status")
-            .symbols("DONE", "FAIL", "PAUSED");
+            .symbols("DONE", "FAIL", "PAUSED")
         val innerDataStatus = SchemaBuilder
             .record("InnerData")
             .fields()
             .requiredString("code")
             .requiredInt("priority")
-            .endRecord();
+            .endRecord()
         val publicDataSchema = SchemaBuilder
             .record("PublicData")
             .fields()
             .requiredString("key")
             .requiredString("data")
-            .endRecord();
+            .endRecord()
         val listSchema = SchemaBuilder
-            .array().items(publicDataSchema);
+            .array().items(publicDataSchema)
         val testObjectSchema = SchemaBuilder
             .record("TestObject")
             .namespace("ru.romanow.serialization.avro")
@@ -83,7 +84,7 @@ class AvroCommand {
             .name("publicData").type(listSchema).noDefault()
             .endRecord()
 
-        logger.info("Manual scheme:\n{}", testObjectSchema.toString(true))
+        logger.info("Manual scheme:\n{}", SchemaFormatter.getInstance("json/pretty").format(testObjectSchema))
 
         val testObject = createTestObject()
         var avroTestObject = GenericRecordBuilder(testObjectSchema)
@@ -100,9 +101,9 @@ class AvroCommand {
             .build()
 
         val json = avroToJson(avroTestObject, testObjectSchema)
-        logger.info("Serialized object '{}' to JSON", json)
+        logger.info("Serialized object 'json' to JSON")
 
         avroTestObject = avroFromJson(json, testObjectSchema)
-        logger.info("Deserialized object '{}'", avroTestObject)
+        logger.info("Deserialized object '$avroTestObject'")
     }
 }

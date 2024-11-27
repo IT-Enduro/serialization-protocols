@@ -1,14 +1,15 @@
 package ru.romanow.serialization.commands
 
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.commons.lang3.RandomUtils
 import org.slf4j.LoggerFactory
 import org.springframework.shell.standard.ShellCommandGroup
 import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
 import ru.romanow.serialization.generated.ProtobufObjectProto
-import ru.romanow.serialization.services.*
+import ru.romanow.serialization.services.parseFrom
+import ru.romanow.serialization.services.serialize
 import java.util.*
+import kotlin.random.Random
 
 @ShellComponent
 @ShellCommandGroup("Protobuf")
@@ -19,7 +20,7 @@ class ProtobufCommand {
     fun protobuf() {
         val testObject = ProtobufObjectProto.TestObject
             .newBuilder()
-            .setCode(RandomUtils.nextInt(0, 100))
+            .setCode(Random.nextInt(0, 100))
             .setMessage(RandomStringUtils.randomAlphabetic(10))
             .setStatus(ProtobufObjectProto.Status.FAIL)
             .setInnerData(ProtobufObjectProto.InnerData.newBuilder().setCode("123").setPriority(100).build())

@@ -2,26 +2,23 @@ import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
 
 plugins {
     id "idea"
-    id "org.jetbrains.kotlin.jvm" version "1.7.10"
-    id "org.jetbrains.kotlin.plugin.spring" version "1.7.10"
-    id "org.springframework.boot" version "3.0.4"
-    id "io.spring.dependency-management" version "1.1.0"
-    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.6.0"
-    id "com.google.protobuf" version "0.9.2"
+    id "org.jetbrains.kotlin.jvm" version "1.9.25"
+    id "org.jetbrains.kotlin.plugin.spring" version "1.9.25"
+    id "org.springframework.boot" version "3.3.6"
+    id "io.spring.dependency-management" version "1.1.6"
+    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.9.1"
+    id "com.google.protobuf" version "0.9.4"
 }
 
 ext {
-    springBootVersion = "3.0.4"
-    springBootShellVersion = "3.0.1"
+    springBootVersion = "3.3.6"
+    springBootShellVersion = "3.3.3"
 
-    avroVersion = "1.11.1"
-    jacksonYamlVersion = "2.14.2"
-    jacksonJsonVersion = "2.14.2"
-    protobufVersion = "3.22.2"
-    lombokVersion = "1.18.20"
+    avroVersion = "1.12.0"
+    protobufVersion = "4.28.3"
 }
 
-[ compileKotlin, compileTestKotlin ]*.kotlinOptions*.jvmTarget = "17"
+[ compileKotlin, compileTestKotlin ]*.kotlinOptions*.jvmTarget = "21"
 
 idea {
     module {
@@ -45,7 +42,7 @@ repositories {
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.shell:spring-shell-starter"
+    implementation "org.springframework.shell:spring-shell-starter-jna"
     implementation "org.springframework.boot:spring-boot-starter-logging"
 
     implementation "com.sun.xml.bind:jaxb-impl"
@@ -67,7 +64,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
 }
 
-task generateAvro(type: GenerateAvroJavaTask) {
+tasks.register("generateAvro", GenerateAvroJavaTask) {
     source("src/main/avro")
     outputDir = file("${project.buildDir}/generated/source/avro")
 }
@@ -76,7 +73,7 @@ compileKotlin.dependsOn(generateAvro)
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
         generatedFilesBaseDir( "${project.buildDir}/generated/source/proto")
     }
 }

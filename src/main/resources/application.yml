@@ -3,3 +3,5 @@ spring:
     banner-mode: off
   shell:
     history.enabled: false
+    interactive.enabled: true
+    script.enabled: true

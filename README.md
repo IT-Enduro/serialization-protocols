@@ -1,6 +1,8 @@
-# Протоколы сериализации
-
 [![Build project](https://github.com/Romanow/serialization-protocols/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Romanow/serialization-protocols/actions/workflows/build.yml)
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+
+# Протоколы сериализации
 
 ## Символьные
 
@@ -24,7 +26,7 @@
 ```shell
 $ ./gradlew clean build
 
-# запуск через `java -jar ...` потому что используется Spring Shell 
+# запуск через `java -jar ...` потому что используется Spring Shell
 $ java -jar build/libs/serialization-protocols.jar
 ```
 
